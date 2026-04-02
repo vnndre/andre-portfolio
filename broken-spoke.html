@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Broken Spoke VR Tour — Andre Espinoza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700;800&family=Unbounded:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #080705;
+    --paper: #f0ebe0;
+    --gold: #c8a44a;
+    --gold-dim: #8a6e2f;
+    --acid: #b4fc2a;
+    --rust: #c94a1a;
+    --violet: #6b3fa0;
+    --smoke: #1a1814;
+    --fog: #2a2520;
+    --mist: #3a332a;
+    --text: #e8e0d0;
+    --text-dim: #7a6e5e;
+    --text-mid: #b0a090;
+    --vr-purple: #a78bfa;
+    --vr-purple-dim: rgba(107,63,160,0.2);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--text);
+    font-family: 'Shippori Mincho', serif;
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  /* CURSOR */
+  * { cursor: none !important; }
+  #cursor-dot {
+    width: 8px; height: 8px;
+    background: var(--vr-purple);
+    border-radius: 50%;
+    position: fixed; top: -200px; left: -200px;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: background 0.15s, transform 0.15s;
+  }
+  #cursor-dot.clicking { transform: translate(-50%, -50%) scale(2.5); background: var(--acid); }
+  #cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid var(--vr-purple);
+    border-radius: 50%;
+    position: fixed; top: -200px; left: -200px;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease;
+    mix-blend-mode: exclusion;
+  }
+  #cursor-ring.hovering { width: 56px; height: 56px; border-color: var(--acid); }
+  #cursor-ring.clicking { width: 70px; height: 70px; border-color: var(--acid); opacity: 0.5; }
+  @media (hover: none) and (pointer: coarse) {
+    #cursor-dot, #cursor-ring { display: none !important; }
+    * { cursor: auto !important; }
+  }
+
+  /* GRAIN */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9000; opacity: 0.35;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(8,7,5,0.95);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(107,63,160,0.35);
+    transition: background 0.3s;
+  }
+  nav.scrolled {
+    background: rgba(8,7,5,0.98);
+    border-bottom: 1px solid rgba(107,63,160,0.5);
+  }
+  .nav-logo {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900; font-size: 0.9rem;
+    letter-spacing: 0.15em; color: var(--gold);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em;
+    color: var(--text-dim); text-decoration: none;
+    text-transform: uppercase; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--vr-purple); }
+  .nav-back {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.12em;
+    color: var(--vr-purple); text-decoration: none;
+    text-transform: uppercase; display: flex; align-items: center; gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .nav-back::before { content: '←'; }
+  .nav-back:hover { color: var(--acid); }
+
+  /* HERO */
+  .case-hero {
+    min-height: 65vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 9rem 3rem 5rem;
+    position: relative; overflow: hidden;
+    border-bottom: 1px solid var(--mist);
+  }
+  .hero-orbs {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  .hero-orb-1 {
+    position: absolute; width: 600px; height: 600px;
+    background: var(--violet); border-radius: 50%;
+    filter: blur(140px); opacity: 0.12;
+    top: -200px; right: -100px;
+  }
+  .hero-orb-2 {
+    position: absolute; width: 300px; height: 300px;
+    background: #a78bfa; border-radius: 50%;
+    filter: blur(100px); opacity: 0.08;
+    bottom: 0; left: 30%;
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(107,63,160,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(107,63,160,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .case-hero-inner {
+    max-width: 1200px; margin: 0 auto; width: 100%;
+    position: relative; z-index: 2;
+  }
+  .case-breadcrumb {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--vr-purple);
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 2rem; opacity: 0.8;
+  }
+  .case-breadcrumb span { color: var(--text-dim); }
+  .case-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    line-height: 0.95; color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+  .case-title em {
+    display: block; color: var(--vr-purple);
+    font-style: normal;
+  }
+  .case-subtitle {
+    font-size: 1.1rem; line-height: 1.7;
+    color: var(--text-mid); max-width: 640px;
+    margin-bottom: 2.5rem;
+  }
+  .case-meta-row {
+    display: flex; gap: 3rem; flex-wrap: wrap;
+  }
+  .case-meta-item {
+    display: flex; flex-direction: column; gap: 0.3rem;
+  }
+  .case-meta-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-dim);
+  }
+  .case-meta-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem; color: var(--text-mid);
+  }
+
+  /* CONTENT */
+  .case-content {
+    max-width: 1200px; margin: 0 auto;
+    padding: 5rem 3rem;
+  }
+
+  /* VR EMBED SECTION */
+  .vr-section {
+    margin-bottom: 5rem;
+    border: 1px solid rgba(107,63,160,0.3);
+    background: var(--smoke);
+    position: relative; overflow: hidden;
+  }
+  .vr-section::before {
+    content: 'LIVE TOUR';
+    position: absolute; top: 1.25rem; right: 1.25rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.2em;
+    color: var(--vr-purple);
+    border: 1px solid var(--vr-purple);
+    padding: 0.25rem 0.6rem; z-index: 3;
+  }
+  .vr-header {
+    padding: 2.5rem 2.5rem 1.5rem;
+    border-bottom: 1px solid var(--mist);
+  }
+  .vr-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--vr-purple);
+    margin-bottom: 0.75rem;
+  }
+  .vr-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700; font-size: 1.2rem;
+    color: var(--text); margin-bottom: 0.5rem;
+  }
+  .vr-desc {
+    font-size: 0.875rem; color: var(--text-dim); line-height: 1.6;
+  }
+  .vr-embed-wrapper {
+    position: relative; width: 100%; padding-top: 56.25%;
+    background: #0a0810;
+  }
+  .vr-embed-wrapper iframe {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    border: none;
+  }
+  .vr-fallback {
+    display: none;
+    padding: 3rem 2.5rem;
+    text-align: center;
+  }
+  .vr-fallback-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink); background: var(--vr-purple);
+    padding: 0.875rem 2rem; text-decoration: none;
+    display: inline-block;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+    transition: background 0.2s, transform 0.2s;
+  }
+  .vr-fallback-link:hover { background: var(--acid); transform: translateY(-2px); }
+  .vr-footer {
+    padding: 1rem 2.5rem;
+    border-top: 1px solid var(--mist);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .vr-footer-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+  .vr-footer-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--vr-purple);
+    text-decoration: none; display: flex; align-items: center; gap: 0.4rem;
+    transition: color 0.2s;
+  }
+  .vr-footer-link::after { content: '↗'; }
+  .vr-footer-link:hover { color: var(--acid); }
+
+  /* CONTENT GRID */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 5rem;
+  }
+
+  /* SECTION BLOCKS */
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--vr-purple);
+    display: flex; align-items: center; gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(to right, var(--vr-purple), transparent);
+    opacity: 0.4;
+  }
+  .block-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700; font-size: 1.4rem;
+    line-height: 1.2; color: var(--text);
+    margin-bottom: 1.25rem;
+  }
+  .block-text {
+    font-size: 0.95rem; line-height: 1.8;
+    color: var(--text-dim); margin-bottom: 1.25rem;
+  }
+
+  /* PROCESS STEPS */
+  .process-steps {
+    display: flex; flex-direction: column; gap: 0;
+    margin-bottom: 5rem;
+  }
+  .process-step {
+    display: grid;
+    grid-template-columns: 4rem 1fr;
+    gap: 2rem;
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--mist);
+    position: relative;
+  }
+  .process-step:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 900; font-size: 2.5rem;
+    color: rgba(107,63,160,0.1);
+    line-height: 1;
+    align-self: start;
+    padding-top: 0.2rem;
+  }
+  .step-content {}
+  .step-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--vr-purple);
+    margin-bottom: 0.5rem;
+  }
+  .step-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700; font-size: 1rem;
+    color: var(--text); margin-bottom: 0.75rem;
+  }
+  .step-text {
+    font-size: 0.9rem; line-height: 1.75;
+    color: var(--text-dim);
+  }
+
+  /* TAGS */
+  .tag-row {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--text-dim);
+    border: 1px solid var(--mist); padding: 0.3rem 0.7rem;
+  }
+  .tag.violet { border-color: rgba(107,63,160,0.35); color: var(--vr-purple); }
+
+  /* OUTCOMES STRIP */
+  .outcomes-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    border: 1px solid rgba(107,63,160,0.2);
+    background: var(--smoke);
+    margin-bottom: 5rem;
+  }
+  .outcome-cell {
+    padding: 2.5rem;
+    border-right: 1px solid var(--mist);
+    position: relative;
+  }
+  .outcome-cell:last-child { border-right: none; }
+  .outcome-icon {
+    font-size: 1.5rem; margin-bottom: 1rem;
+    display: block;
+    filter: drop-shadow(0 0 12px rgba(107,63,160,0.4));
+  }
+  .outcome-title {
+    font-family: 'Unbounded', sans-serif;
+    font-weight: 700; font-size: 0.85rem;
+    color: var(--text); margin-bottom: 0.5rem;
+  }
+  .outcome-text {
+    font-size: 0.82rem; line-height: 1.7;
+    color: var(--text-dim);
+  }
+
+  /* REFLECTION */
+  .reflection-block {
+    border-left: 2px solid var(--vr-purple);
+    padding: 2rem 2.5rem;
+    background: var(--smoke);
+    margin-bottom: 5rem;
+  }
+  .reflection-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--vr-purple);
+    margin-bottom: 1rem;
+  }
+  .reflection-text {
+    font-size: 1rem; line-height: 1.85;
+    color: var(--text-mid); font-style: italic;
+  }
+
+  /* FOOTER NAV */
+  .case-footer {
+    border-top: 1px solid var(--mist);
+    padding: 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .footer-back {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--vr-purple);
+    text-decoration: none; display: flex; align-items: center; gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .footer-back::before { content: '←'; }
+  .footer-back:hover { color: var(--acid); }
+  .footer-sig {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.1em;
+    color: var(--text-dim);
+  }
+
+  /* MOBILE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .case-hero { padding: 7rem 1.5rem 3rem; }
+    .case-content { padding: 3rem 1.5rem; }
+    .case-title { font-size: 2.2rem; }
+    .case-meta-row { gap: 1.5rem; }
+    .content-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .outcomes-strip { grid-template-columns: 1fr; }
+    .outcome-cell { border-right: none; border-bottom: 1px solid var(--mist); }
+    .outcome-cell:last-child { border-bottom: none; }
+    .vr-footer { flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+    .case-footer { flex-direction: column; gap: 1.5rem; }
+    .process-step { grid-template-columns: 2.5rem 1fr; gap: 1rem; }
+    * { cursor: auto !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="index.html" class="nav-logo">AE</a>
+  <a href="index.html#work" class="nav-back">All Work</a>
+</nav>
+
+<!-- HERO -->
+<section class="case-hero">
+  <div class="hero-orbs">
+    <div class="hero-orb-1"></div>
+    <div class="hero-orb-2"></div>
+    <div class="hero-grid"></div>
+  </div>
+  <div class="case-hero-inner">
+    <div class="case-breadcrumb">
+      Work <span>/</span> VR / Cultural Preservation
+    </div>
+    <h1 class="case-title">
+      The Broken Spoke
+      <em>VR Tour</em>
+    </h1>
+    <p class="case-subtitle">
+      A honky-tonk that's been on South Lamar for 50+ years is getting squeezed out by gentrification. I built a VR experience to preserve it before it disappears.
+    </p>
+    <div class="case-meta-row">
+      <div class="case-meta-item">
+        <span class="case-meta-label">Role</span>
+        <span class="case-meta-value">UX Lead</span>
+      </div>
+      <div class="case-meta-item">
+        <span class="case-meta-label">Type</span>
+        <span class="case-meta-value">VR / Cultural UX</span>
+      </div>
+      <div class="case-meta-item">
+        <span class="case-meta-label">Tools</span>
+        <span class="case-meta-value">Insta360 · Lapentor · Figma</span>
+      </div>
+      <div class="case-meta-item">
+        <span class="case-meta-label">Context</span>
+        <span class="case-meta-value">Austin, TX</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<div class="case-content">
+
+  <!-- VR EMBED -->
+  <div class="vr-section">
+    <div class="vr-header">
+      <div class="vr-label">Interactive Experience</div>
+      <div class="vr-title">Explore The Broken Spoke</div>
+      <p class="vr-desc">360° VR tour — use your mouse or touch to look around. Works on desktop, mobile, and VR headsets.</p>
+    </div>
+    <div class="vr-embed-wrapper">
+      <iframe
+        src="https://app.lapentor.com/sphere/story-of-broken-spoke-and-preserving-austin-culture"
+        allowfullscreen
+        allow="xr-spatial-tracking; gyroscope; accelerometer; fullscreen"
+        loading="lazy"
+        title="The Broken Spoke VR Tour — Lapentor"
+      ></iframe>
+    </div>
+    <div class="vr-footer">
+      <span class="vr-footer-note">Hosted on Lapentor · Best experienced in fullscreen</span>
+      <a
+        href="https://app.lapentor.com/sphere/story-of-broken-spoke-and-preserving-austin-culture"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="vr-footer-link"
+      >Open full tour</a>
+    </div>
+  </div>
+
+  <!-- OVERVIEW + PROBLEM -->
+  <div class="content-grid">
+    <div>
+      <div class="section-label">Overview</div>
+      <h2 class="block-title">What this is</h2>
+      <p class="block-text">
+        The Broken Spoke is one of Austin's last true honky-tonks — open since 1964, unchanged by design. As South Lamar developed around it, the threat of losing it became real. This project was about documentation, preservation, and access.
+      </p>
+      <p class="block-text">
+        I served as UX lead — responsible for research, user journey design, information architecture within the tour, and testing whether the experience could actually evoke the place.
+      </p>
+      <div class="tag-row">
+        <span class="tag violet">VR / AR</span>
+        <span class="tag violet">Cultural Preservation</span>
+        <span class="tag violet">Interactive Storytelling</span>
+        <span class="tag violet">UX Research</span>
+      </div>
+    </div>
+    <div>
+      <div class="section-label">Problem</div>
+      <h2 class="block-title">The thing worth saving</h2>
+      <p class="block-text">
+        Rapid urban development and gentrification is physically surrounding The Broken Spoke. With 50+ years of Austin music history concentrated in one building, there's no scalable way to give people access to that heritage — unless you bring it to them.
+      </p>
+      <p class="block-text">
+        The challenge wasn't just technical. It was emotional: how do you translate the smell of sawdust, the sound of a Friday night, and the weight of that history into a digital experience without it becoming a museum exhibit?
+      </p>
+    </div>
+  </div>
+
+  <!-- PROCESS -->
+  <div class="section-label" style="margin-bottom:2rem;">Design Process</div>
+  <div class="process-steps">
+
+    <div class="process-step">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <div class="step-label">Research</div>
+        <div class="step-title">Understanding what makes it real</div>
+        <p class="step-text">
+          Started with patron interviews and conversations with locals who've been going to The Broken Spoke for decades. Supplemented with historical photo and document analysis, and a study of Austin's urban development trends. The goal: understand what people actually remember about the place, not what looks good in a screenshot.
+        </p>
+      </div>
+    </div>
+
+    <div class="process-step">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <div class="step-label">Capture</div>
+        <div class="step-title">360° on-site photography with Insta360</div>
+        <p class="step-text">
+          Shot the venue in 360° using an Insta360 camera — dance floor, bar, stage, walls covered in decades of memorabilia. The capture had to be intentional: not a documentation dump, but a curated set of views that mirror how someone actually moves through and experiences the space.
+        </p>
+      </div>
+    </div>
+
+    <div class="process-step">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <div class="step-label">Build</div>
+        <div class="step-title">Structuring the tour in Lapentor</div>
+        <p class="step-text">
+          Used Lapentor to assemble the 360° captures into an interactive tour — adding hotspots, narrative context, audio-visual elements, and historical information throughout the space. The information architecture question was: what does someone need to see, hear, and read to actually understand what they're standing inside?
+        </p>
+      </div>
+    </div>
+
+    <div class="process-step">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <div class="step-label">Testing</div>
+        <div class="step-title">Does this feel like the real Broken Spoke?</div>
+        <p class="step-text">
+          User testing focused on one question: emotional authenticity. Does this experience make you feel like you were there? Feedback shaped refinements to the tour flow, hotspot placement, and the balance between historical information and atmosphere. The risk was over-explaining — turning a lived experience into a Wikipedia article with 360° photos.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- OUTCOMES -->
+  <div class="section-label" style="margin-bottom:2rem;">Outcomes</div>
+  <div class="outcomes-strip">
+    <div class="outcome-cell">
+      <span class="outcome-icon">🎸</span>
+      <div class="outcome-title">Preserved Access</div>
+      <p class="outcome-text">Anyone, anywhere can now experience The Broken Spoke — no flight to Austin required. The tour remains accessible even as the physical venue faces ongoing development pressure.</p>
+    </div>
+    <div class="outcome-cell">
+      <span class="outcome-icon">🏛️</span>
+      <div class="outcome-title">Cultural Documentation</div>
+      <p class="outcome-text">A permanent 360° record of the venue, its atmosphere, and its history — captured before further change. Historical context layered throughout makes it a living archive, not just a photo set.</p>
+    </div>
+    <div class="outcome-cell">
+      <span class="outcome-icon">📐</span>
+      <div class="outcome-title">Scalable Model</div>
+      <p class="outcome-text">This approach — Insta360 capture + Lapentor interactive hosting — works for any at-risk cultural site. Low overhead, high fidelity, no custom dev required. A replicable preservation toolkit.</p>
+    </div>
+  </div>
+
+  <!-- REFLECTION -->
+  <div class="reflection-block">
+    <div class="reflection-label">Reflection</div>
+    <p class="reflection-text">
+      "This project taught me that designing for a place people love means every detail carries emotional weight. The goal wasn't to make something impressive — it was to make something that felt true. That distinction changed how I approach empathy-driven design work."
+    </p>
+  </div>
+
+</div>
+
+<!-- FOOTER NAV -->
+<footer>
+  <div class="case-footer">
+    <a href="index.html#work" class="footer-back">Back to all work</a>
+    <span class="footer-sig">Andre Espinoza — Portfolio 2026</span>
+  </div>
+</footer>
+
+<script>
+  // Cursor
+  const dot = document.getElementById('cursor-dot');
+  const ring = document.getElementById('cursor-ring');
+  let mx = -200, my = -200, rx = -200, ry = -200;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  document.addEventListener('mousedown', () => { dot.classList.add('clicking'); ring.classList.add('clicking'); });
+  document.addEventListener('mouseup', () => { dot.classList.remove('clicking'); ring.classList.remove('clicking'); });
+  document.querySelectorAll('a, button, iframe').forEach(el => {
+    el.addEventListener('mouseenter', () => ring.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => ring.classList.remove('hovering'));
+  });
+  (function loop() {
+    dot.style.left = mx + 'px'; dot.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(loop);
+  })();
+
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+</script>
+</body>
+</html>
