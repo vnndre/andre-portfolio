@@ -408,6 +408,37 @@ footer a:hover{color:var(--acid)}
   .c-btn{width:100%;text-align:center;justify-content:center}
 }
 
+/* ═══════════ 3D TILT ON PROJECT CARDS ═══════════ */
+.project-card{perspective:800px}
+.pc-expand-inner{transition:transform .4s cubic-bezier(.22,1,.36,1)}
+.project-card.tilting .pc-expand-inner{will-change:transform}
+
+/* ═══════════ DRAGGABLE HERO PHOTOS ═══════════ */
+@media(hover:hover)and(pointer:fine){
+  .hero-collage img{pointer-events:auto;cursor:grab}
+  .hero-collage img:active{cursor:grabbing;z-index:10;filter:grayscale(0)!important}
+  .hero-collage img.dragging{transition:none!important;z-index:10;filter:grayscale(0) contrast(1)!important;box-shadow:0 12px 50px rgba(0,0,0,.6)}
+}
+
+/* ═══════════ CURSOR DEPTH RESPONSE ═══════════ */
+.depth-layer{transition:transform .6s cubic-bezier(.22,1,.36,1);will-change:transform}
+
+/* ═══════════ SMOOTH WORD REVEAL ═══════════ */
+.word-reveal .word{display:inline-block;opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s cubic-bezier(.22,1,.36,1)}
+.word-reveal .word.visible{opacity:1;transform:none}
+
+/* ═══════════ PROJECT THUMB PEEK ═══════════ */
+.pc-row{position:relative;overflow:hidden}
+.pc-peek{
+  position:absolute;right:3rem;top:50%;transform:translateY(-50%) translateX(20px);
+  width:180px;height:110px;overflow:hidden;border:1px solid var(--line);
+  opacity:0;transition:opacity .4s,transform .4s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;z-index:1;
+}
+.pc-peek img{width:100%;height:100%;object-fit:cover;filter:grayscale(.3)}
+.project-card:hover .pc-peek{opacity:1;transform:translateY(-50%) translateX(0)}
+@media(max-width:900px){.pc-peek{display:none}}
+
 /* ═══════════ REDUCED MOTION ═══════════ */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
@@ -500,13 +531,12 @@ footer a:hover{color:var(--acid)}
       <img src="images/ig/18112614709577987.jpg" alt="" class="ap-2" loading="lazy">
       <img src="images/ig/18090727043024007.jpg" alt="" class="ap-3" loading="lazy">
       <span class="about-sticker" style="top:5%;left:60%">EP | ATX</span>
-      <span class="about-sticker s2">foolin again</span>
     </div>
     <div class="about-currently rv d2">
-      <div class="cur-card"><div class="lbl">Building</div><div class="val">AI Review Pipelines</div></div>
-      <div class="cur-card"><div class="lbl">Learning</div><div class="val">Claude Code & MCP</div></div>
-      <div class="cur-card"><div class="lbl">Listening</div><div class="val">Glass Beams — Mahal</div></div>
-      <div class="cur-card"><div class="lbl">Next Trip</div><div class="val">Japan</div></div>
+      <div class="cur-card"><div class="lbl">Building</div><div class="val">AI-Powered Tools</div></div>
+      <div class="cur-card"><div class="lbl">Learning</div><div class="val">Agentic Workflows</div></div>
+      <div class="cur-card"><div class="lbl">Exploring</div><div class="val">New Interfaces</div></div>
+      <div class="cur-card"><div class="lbl">Based In</div><div class="val">Austin, TX</div></div>
     </div>
   </div>
 
@@ -520,7 +550,7 @@ footer a:hover{color:var(--acid)}
 
     <blockquote class="about-quote rv d3">I design the experience around the code — not the other way around.</blockquote>
 
-    <p class="rv d4">That instinct carried through <strong>Voluba Kicks</strong> ($5–15k/month in sneaker resale), a BA in UX at <strong>St. Edward's</strong> (3.87 GPA), and a post-grad at <strong>UT McCombs</strong>. Now I build AI-powered tools that turn messy data into clear decisions — and spend my weekends hunting for the best techno sets and tacos in Austin.</p>
+    <p class="rv d4">That instinct carried through <strong>Voluba Kicks</strong> ($5–15k/month in sneaker resale), a BA in UX at <strong>St. Edward's</strong> (3.87 GPA), and a post-grad at <strong>UT McCombs</strong>. Now I build AI-powered tools that turn messy data into clear decisions.</p>
   </div>
 </section>
 
@@ -539,6 +569,7 @@ footer a:hover{color:var(--acid)}
         <div class="pc-tags"><span class="pc-tag hl">AI / UX</span><span class="pc-tag">Sentiment Analysis</span><span class="pc-tag">Automation</span></div>
       </div>
       <span class="pc-metric">4.03 → 4.89 rating lift</span>
+      <div class="pc-peek"><img src="images/funlab-dashboard.png" alt="" loading="lazy"></div>
       <span class="pc-arrow">→</span>
     </div>
     <div class="pc-expand">
@@ -566,6 +597,7 @@ footer a:hover{color:var(--acid)}
         <div class="pc-tags"><span class="pc-tag hl">UX Research</span><span class="pc-tag">Cultural Preservation</span><span class="pc-tag">360°</span></div>
       </div>
       <span class="pc-metric">360° Immersive · Instax Photography</span>
+      <div class="pc-peek"><img src="images/brokenspoke.png" alt="" loading="lazy"></div>
       <span class="pc-arrow">→</span>
     </div>
     <div class="pc-expand">
@@ -589,6 +621,7 @@ footer a:hover{color:var(--acid)}
         <div class="pc-tags"><span class="pc-tag hl">Product Design</span><span class="pc-tag">React</span><span class="pc-tag">Full-Stack</span></div>
       </div>
       <span class="pc-metric">Built in 28hrs · Claude Vision + Supabase</span>
+      <div class="pc-peek"><img src="images/cartlog-budget.svg" alt="" loading="lazy"></div>
       <span class="pc-arrow">→</span>
     </div>
     <div class="pc-expand">
@@ -612,6 +645,7 @@ footer a:hover{color:var(--acid)}
         <div class="pc-tags"><span class="pc-tag hl">UX Design</span><span class="pc-tag">Social Impact</span><span class="pc-tag">Mobile</span></div>
       </div>
       <span class="pc-metric">Swipe UX · Donor Matching</span>
+      <div class="pc-peek"><img src="images/charityswipe-hero.png" alt="" loading="lazy"></div>
       <span class="pc-arrow">→</span>
     </div>
     <div class="pc-expand">
@@ -635,6 +669,7 @@ footer a:hover{color:var(--acid)}
         <div class="pc-tags"><span class="pc-tag hl">AI / UX</span><span class="pc-tag">Education</span><span class="pc-tag">GPT</span></div>
       </div>
       <span class="pc-metric">GPT-4 · St. Edward's University</span>
+      <div class="pc-peek"><img src="images/screenshot-3.png" alt="" loading="lazy"></div>
       <span class="pc-arrow">→</span>
     </div>
     <div class="pc-expand">
@@ -658,11 +693,11 @@ footer a:hover{color:var(--acid)}
   <div class="attr rv d1">A Portrait in Motion — 2026</div>
 </section>
 
-<!-- ═══════════ MARQUEE 2 — PERSONALITY ═══════════ -->
+<!-- ═══════════ MARQUEE 2 ═══════════ -->
 <div class="marquee">
   <div class="marquee-track" style="animation-direction:reverse;animation-duration:28s">
-    <span>Austin TX</span><span>Big Bend</span><span>El Paso</span><span>Techno</span><span>Kapital</span><span>Tacoma</span><span>Glass Beams</span><span>Boiler Room</span><span>Japan</span><span>Raw Denim</span><span>Borderland</span><span>oh lawdy</span>
-    <span>Austin TX</span><span>Big Bend</span><span>El Paso</span><span>Techno</span><span>Kapital</span><span>Tacoma</span><span>Glass Beams</span><span>Boiler Room</span><span>Japan</span><span>Raw Denim</span><span>Borderland</span><span>oh lawdy</span>
+    <span>Layered</span><span>Intentional</span><span>Borderland</span><span>Systems</span><span>Texture</span><span>Rhythm</span><span>Curiosity</span><span>Warmth</span><span>Depth</span><span>Craft</span><span>Culture</span><span>Discovery</span>
+    <span>Layered</span><span>Intentional</span><span>Borderland</span><span>Systems</span><span>Texture</span><span>Rhythm</span><span>Curiosity</span><span>Warmth</span><span>Depth</span><span>Craft</span><span>Culture</span><span>Discovery</span>
   </div>
 </div>
 
@@ -1015,6 +1050,105 @@ document.querySelectorAll('a[href^="#"]').forEach(function(a){
     img.addEventListener('mouseenter',function(){img.style.zIndex=10});
     img.addEventListener('mouseleave',function(){setTimeout(function(){img.style.zIndex=''},300)});
   });
+})();
+
+/* ─── DRAGGABLE HERO PHOTOS ─── */
+(function(){
+  if(!window.matchMedia('(hover:hover)and(pointer:fine)').matches)return;
+  var imgs=document.querySelectorAll('.hero-collage img');
+  imgs.forEach(function(img){
+    var startX,startY,origX,origY,isDragging=false;
+    img.addEventListener('mousedown',function(e){
+      e.preventDefault();
+      isDragging=true;
+      img.classList.add('dragging');
+      startX=e.clientX;startY=e.clientY;
+      var st=window.getComputedStyle(img);
+      var matrix=new DOMMatrix(st.transform);
+      origX=matrix.m41;origY=matrix.m42;
+    });
+    document.addEventListener('mousemove',function(e){
+      if(!isDragging)return;
+      var dx=e.clientX-startX;
+      var dy=e.clientY-startY;
+      var cls=img.className;
+      var rot=cls.includes('hc-1')?-4:cls.includes('hc-2')?3:cls.includes('hc-3')?-2:cls.includes('hc-4')?5:cls.includes('hc-5')?-6:2.5;
+      img.style.transform='translate('+(origX+dx)+'px,'+(origY+dy)+'px) rotate('+rot+'deg)';
+    });
+    document.addEventListener('mouseup',function(){
+      if(!isDragging)return;
+      isDragging=false;
+      img.classList.remove('dragging');
+    });
+  });
+})();
+
+/* ─── 3D TILT ON PROJECT CARDS ─── */
+(function(){
+  if(!window.matchMedia('(hover:hover)').matches)return;
+  var cards=document.querySelectorAll('.project-card');
+  cards.forEach(function(card){
+    card.addEventListener('mousemove',function(e){
+      var rect=card.getBoundingClientRect();
+      var x=(e.clientX-rect.left)/rect.width-.5;
+      var y=(e.clientY-rect.top)/rect.height-.5;
+      card.style.transform='perspective(800px) rotateX('+(-y*3)+'deg) rotateY('+(x*3)+'deg)';
+    });
+    card.addEventListener('mouseleave',function(){
+      card.style.transform='';
+      card.style.transition='transform .5s cubic-bezier(.22,1,.36,1)';
+      setTimeout(function(){card.style.transition=''},500);
+    });
+  });
+})();
+
+/* ─── CURSOR-RESPONSIVE DEPTH ON ABOUT SECTION ─── */
+(function(){
+  if(!window.matchMedia('(hover:hover)').matches)return;
+  var about=document.querySelector('.about');
+  var photos=document.querySelector('.about-photos');
+  var right=document.querySelector('.about-right');
+  if(!about||!photos)return;
+  about.addEventListener('mousemove',function(e){
+    var rect=about.getBoundingClientRect();
+    var x=(e.clientX-rect.left)/rect.width-.5;
+    var y=(e.clientY-rect.top)/rect.height-.5;
+    photos.style.transform='translate('+(x*-12)+'px,'+(y*-8)+'px)';
+    if(right)right.style.transform='translate('+(x*5)+'px,'+(y*3)+'px)';
+  });
+  about.addEventListener('mouseleave',function(){
+    photos.style.transform='';
+    if(right)right.style.transform='';
+  });
+})();
+
+/* ─── WORD-BY-WORD REVEAL ON ABOUT HEADING ─── */
+(function(){
+  var headings=document.querySelectorAll('.about-right h2');
+  headings.forEach(function(h){
+    var html=h.innerHTML;
+    // Wrap each word in a span, preserving HTML tags like <em>
+    var wrapped=html.replace(/(\S+)/g,function(match){
+      if(match.startsWith('<')||match.startsWith('</')){return match}
+      return '<span class="word">'+match+'</span>';
+    });
+    h.innerHTML=wrapped;
+    h.classList.add('word-reveal');
+    // Remove the .rv class so word reveal handles it
+    h.classList.remove('rv','d1');
+    h.style.opacity='1';h.style.transform='none';
+  });
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting)return;
+      var words=e.target.querySelectorAll('.word');
+      words.forEach(function(w,i){
+        setTimeout(function(){w.classList.add('visible')},i*80);
+      });
+      obs.unobserve(e.target);
+    });
+  },{threshold:.3});
+  document.querySelectorAll('.word-reveal').forEach(function(el){obs.observe(el)});
 })();
 </script>
 </body>
