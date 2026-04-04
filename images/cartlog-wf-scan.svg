@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="375" height="812" viewBox="0 0 375 812">
+  <style>
+    text { font-family: 'Helvetica Neue', sans-serif; }
+    .label { font-size: 11px; fill: #999; font-style: italic; }
+    .heading { font-size: 16px; fill: #444; font-weight: 600; }
+    .subtext { font-size: 12px; fill: #888; }
+    .annotation { font-size: 10px; fill: #c44; font-style: italic; }
+  </style>
+
+  <!-- Phone frame -->
+  <rect x="0" y="0" width="375" height="812" rx="40" fill="#fafafa" stroke="#ccc" stroke-width="2"/>
+
+  <!-- Status bar area -->
+  <rect x="0" y="0" width="375" height="44" rx="40" fill="#f0f0f0"/>
+  <text x="187" y="30" text-anchor="middle" font-size="13" fill="#666">9:41</text>
+
+  <!-- Header -->
+  <rect x="20" y="60" width="335" height="40" rx="4" fill="none" stroke="#ddd" stroke-dasharray="4"/>
+  <text x="30" y="85" class="heading">cartlog</text>
+  <circle cx="340" cy="80" r="5" fill="none" stroke="#ddd" stroke-dasharray="3"/>
+  <text x="330" y="100" class="label">status dot</text>
+
+  <!-- Title -->
+  <text x="187" y="140" text-anchor="middle" font-size="18" fill="#555" font-weight="600">Scan a Receipt</text>
+  <text x="187" y="160" text-anchor="middle" class="subtext">Tap the box or drag a photo in</text>
+
+  <!-- Upload zone wireframe -->
+  <rect x="48" y="190" width="280" height="320" rx="24" fill="none" stroke="#bbb" stroke-width="2" stroke-dasharray="8 4"/>
+
+  <!-- Receipt icon placeholder -->
+  <rect x="148" y="280" width="80" height="80" rx="8" fill="none" stroke="#ccc" stroke-dasharray="4"/>
+  <text x="188" y="330" text-anchor="middle" font-size="36">🧾</text>
+
+  <!-- Upload text -->
+  <text x="188" y="390" text-anchor="middle" font-size="14" fill="#888">Tap to scan</text>
+  <text x="188" y="410" text-anchor="middle" font-size="11" fill="#aaa">or drag &amp; drop a photo</text>
+
+  <!-- Annotations -->
+  <line x1="340" y1="300" x2="330" y2="300" stroke="#c44" stroke-dasharray="3"/>
+  <text x="255" y="540" class="annotation">drag &amp; drop zone</text>
+  <text x="255" y="555" class="annotation">accepts image/*</text>
+
+  <!-- Hidden file input annotation -->
+  <text x="48" y="540" class="annotation">hidden &lt;input type="file"&gt;</text>
+  <text x="48" y="555" class="annotation">triggered on tap</text>
+
+  <!-- Bottom tab bar wireframe -->
+  <rect x="0" y="730" width="375" height="82" fill="#f5f5f5" stroke="#ddd"/>
+
+  <!-- Tab items -->
+  <circle cx="94" cy="760" r="14" fill="none" stroke="#ccc"/>
+  <text x="94" y="790" text-anchor="middle" font-size="10" fill="#999">History</text>
+
+  <!-- Scan tab (active) -->
+  <circle cx="187" cy="752" r="22" fill="none" stroke="#555" stroke-width="2"/>
+  <text x="187" y="758" text-anchor="middle" font-size="14" fill="#555">📷</text>
+  <text x="187" y="790" text-anchor="middle" font-size="10" fill="#555" font-weight="600">Scan</text>
+
+  <circle cx="281" cy="760" r="14" fill="none" stroke="#ccc"/>
+  <text x="281" y="790" text-anchor="middle" font-size="10" fill="#999">Budget</text>
+
+  <!-- Annotation: primary tab -->
+  <text x="230" y="750" class="annotation">primary</text>
+
+  <!-- Wireframe label -->
+  <text x="187" y="30" text-anchor="middle" font-size="9" fill="#bbb" transform="translate(0,785)">WIREFRAME — Scan Screen (idle state)</text>
+</svg>

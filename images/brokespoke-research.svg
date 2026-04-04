@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <style>
+    text { font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .title { font-size: 28px; fill: #1a1a2e; font-weight: 700; }
+    .subtitle { font-size: 14px; fill: #64748b; }
+    .section-head { font-size: 16px; fill: #a78bfa; font-weight: 700; letter-spacing: 2px; }
+    .card-title { font-size: 14px; fill: #e8e0d0; font-weight: 600; }
+    .card-text { font-size: 11px; fill: #7a6e5e; }
+    .handwrite { font-family: 'Georgia', serif; font-style: italic; }
+  </style>
+
+  <defs>
+    <filter id="paper">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feBlend in="SourceGraphic" mode="multiply"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="900" fill="#0a0805"/>
+
+  <!-- Title -->
+  <text x="600" y="50" text-anchor="middle" class="title" fill="#e8e0d0">Research Artifacts — The Broken Spoke</text>
+  <text x="600" y="74" text-anchor="middle" class="subtitle" fill="#7a6e5e">Field research, patron interviews, and historical documentation</text>
+
+  <!-- ========== INTERVIEW NOTES (left column) ========== -->
+  <text x="60" y="120" class="section-head">PATRON INTERVIEWS</text>
+  <line x1="60" y1="130" x2="500" y2="130" stroke="#a78bfa" stroke-width="1" opacity="0.3"/>
+
+  <!-- Interview card 1 -->
+  <rect x="40" y="150" width="480" height="160" rx="4" fill="#1a1410" stroke="#2a2418" stroke-width="1"/>
+  <rect x="40" y="150" width="4" height="160" fill="#a78bfa" opacity="0.6"/>
+
+  <text x="60" y="175" class="card-title">Patron #1 — "Regular since 1987"</text>
+  <text x="60" y="195" font-family="Georgia, serif" font-size="12" fill="#b0a090" font-style="italic">"When I walk in here, it smells the same as it did 30 years</text>
+  <text x="60" y="212" font-family="Georgia, serif" font-size="12" fill="#b0a090" font-style="italic">ago. Sawdust, cold beer, and something you can't name.</text>
+  <text x="60" y="229" font-family="Georgia, serif" font-size="12" fill="#b0a090" font-style="italic">That's what you gotta capture — not the building, the feeling."</text>
+
+  <text x="60" y="258" font-family="monospace" font-size="10" fill="#4a3e28">KEY INSIGHT: Sensory memory > visual memory for regulars</text>
+  <text x="60" y="275" font-family="monospace" font-size="10" fill="#4a3e28">DESIGN IMPLICATION: Audio layer critical — not just photos</text>
+  <text x="60" y="292" font-family="monospace" font-size="10" fill="#a78bfa">THEME: Authenticity through atmosphere</text>
+
+  <!-- Interview card 2 -->
+  <rect x="40" y="325" width="480" height="145" rx="4" fill="#1a1410" stroke="#2a2418" stroke-width="1"/>
+  <rect x="40" y="325" width="4" height="145" fill="#a78bfa" opacity="0.6"/>
+
+  <text x="60" y="350" class="card-title">Patron #2 — "First-timer from Denver"</text>
+  <text x="60" y="370" font-family="Georgia, serif" font-size="12" fill="#b0a090" font-style="italic">"I came because someone told me this place wouldn't exist in</text>
+  <text x="60" y="387" font-family="Georgia, serif" font-size="12" fill="#b0a090" font-style="italic">five years. That urgency — that's what made me fly down."</text>
+
+  <text x="60" y="416" font-family="monospace" font-size="10" fill="#4a3e28">KEY INSIGHT: Urgency/scarcity drives visitation</text>
+  <text x="60" y="433" font-family="monospace" font-size="10" fill="#4a3e28">DESIGN IMPLICATION: Frame preservation narrative as time-sensitive</text>
+  <text x="60" y="450" font-family="monospace" font-size="10" fill="#a78bfa">THEME: Cultural urgency as motivator</text>
+
+  <!-- Interview card 3 -->
+  <rect x="40" y="485" width="480" height="145" rx="4" fill="#1a1410" stroke="#2a2418" stroke-width="1"/>
+  <rect x="40" y="485" width="4" height="145" fill="#a78bfa" opacity="0.6"/>
+
+  <text x="60" y="510" class="card-title">Patron #3 — "Dance instructor, 15 years"</text>
+  <text x="60" y="530" font-family="Georgia, serif" font-size="12" fill="#b0a090" font-style="italic">"People think it's about the music. It's about the floor.</text>
+  <text x="60" y="547" font-family="Georgia, serif" font-size="12" fill="#b0a090" font-style="italic">That specific floor. The way your boots sound on it.</text>
+  <text x="60" y="564" font-family="Georgia, serif" font-size="12" fill="#b0a090" font-style="italic">Every scratch tells a story."</text>
+
+  <text x="60" y="593" font-family="monospace" font-size="10" fill="#4a3e28">KEY INSIGHT: Physical texture carries meaning</text>
+  <text x="60" y="610" font-family="monospace" font-size="10" fill="#a78bfa">THEME: The venue IS the artifact</text>
+
+  <!-- ========== HISTORICAL PHOTOS (right column) ========== -->
+  <text x="580" y="120" class="section-head">HISTORICAL DOCUMENTATION</text>
+  <line x1="580" y1="130" x2="1160" y2="130" stroke="#a78bfa" stroke-width="1" opacity="0.3"/>
+
+  <!-- Historical photo placeholder 1 -->
+  <rect x="580" y="150" width="260" height="180" rx="4" fill="#1a1410" stroke="#2a2418" stroke-width="1"/>
+  <rect x="592" y="162" width="236" height="130" fill="#1e1810"/>
+  <!-- Photo placeholder content -->
+  <text x="710" y="230" text-anchor="middle" font-size="28" fill="#2a2418">📸</text>
+  <text x="710" y="250" text-anchor="middle" font-size="9" fill="#3a2e18">Original 1964 Opening</text>
+  <text x="592" y="310" font-family="monospace" font-size="9" fill="#4a3e28">Source: Austin History Center Archives</text>
+  <text x="592" y="323" font-family="monospace" font-size="9" fill="#4a3e28">Date: November 1964</text>
+
+  <!-- Historical photo placeholder 2 -->
+  <rect x="870" y="150" width="260" height="180" rx="4" fill="#1a1410" stroke="#2a2418" stroke-width="1"/>
+  <rect x="882" y="162" width="236" height="130" fill="#1e1810"/>
+  <text x="1000" y="230" text-anchor="middle" font-size="28" fill="#2a2418">📸</text>
+  <text x="1000" y="250" text-anchor="middle" font-size="9" fill="#3a2e18">South Lamar — 1970s</text>
+  <text x="882" y="310" font-family="monospace" font-size="9" fill="#4a3e28">Source: Austin History Center</text>
+  <text x="882" y="323" font-family="monospace" font-size="9" fill="#4a3e28">Context: Pre-development era</text>
+
+  <!-- Historical photo placeholder 3 -->
+  <rect x="580" y="350" width="260" height="180" rx="4" fill="#1a1410" stroke="#2a2418" stroke-width="1"/>
+  <rect x="592" y="362" width="236" height="130" fill="#1e1810"/>
+  <text x="710" y="430" text-anchor="middle" font-size="28" fill="#2a2418">📸</text>
+  <text x="710" y="450" text-anchor="middle" font-size="9" fill="#3a2e18">George Strait Performance</text>
+  <text x="592" y="510" font-family="monospace" font-size="9" fill="#4a3e28">Source: Broken Spoke Archives</text>
+  <text x="592" y="523" font-family="monospace" font-size="9" fill="#4a3e28">Date: ~1983 — Before fame</text>
+
+  <!-- Historical photo placeholder 4 -->
+  <rect x="870" y="350" width="260" height="180" rx="4" fill="#1a1410" stroke="#2a2418" stroke-width="1"/>
+  <rect x="882" y="362" width="236" height="130" fill="#1e1810"/>
+  <text x="1000" y="430" text-anchor="middle" font-size="28" fill="#2a2418">📸</text>
+  <text x="1000" y="450" text-anchor="middle" font-size="9" fill="#3a2e18">South Lamar — 2024 (Google Maps)</text>
+  <text x="882" y="510" font-family="monospace" font-size="9" fill="#4a3e28">Context: Modern development encroaching</text>
+  <text x="882" y="523" font-family="monospace" font-size="9" fill="#4a3e28">Condos visible adjacent to venue</text>
+
+  <!-- ========== URBAN DEVELOPMENT STUDY ========== -->
+  <text x="580" y="575" class="section-head">URBAN DEVELOPMENT STUDY</text>
+  <line x1="580" y1="585" x2="1160" y2="585" stroke="#a78bfa" stroke-width="1" opacity="0.3"/>
+
+  <rect x="580" y="600" width="560" height="120" rx="4" fill="#1a1410" stroke="#2a2418" stroke-width="1"/>
+  <rect x="580" y="600" width="4" height="120" fill="#c94a1a" opacity="0.6"/>
+
+  <text x="600" y="625" font-family="monospace" font-size="11" fill="#c94a1a" font-weight="600">THREAT ASSESSMENT — South Lamar Corridor</text>
+  <text x="600" y="648" font-family="monospace" font-size="10" fill="#7a6e5e">Property values:  +340% increase since 2010</text>
+  <text x="600" y="665" font-family="monospace" font-size="10" fill="#7a6e5e">New construction: 12 mixed-use projects within 0.5mi radius</text>
+  <text x="600" y="682" font-family="monospace" font-size="10" fill="#7a6e5e">Venues lost:     Jovita's (2020), Shady Grove (2019), Threadgill's (2020)</text>
+  <text x="600" y="699" font-family="monospace" font-size="10" fill="#c94a1a" font-weight="600">Status:          Broken Spoke operating — surrounded by development</text>
+
+  <!-- ========== SYNTHESIS ========== -->
+  <text x="60" y="670" class="section-head">RESEARCH SYNTHESIS</text>
+  <line x1="60" y1="680" x2="500" y2="680" stroke="#a78bfa" stroke-width="1" opacity="0.3"/>
+
+  <rect x="40" y="695" width="480" height="170" rx="4" fill="#1a1410" stroke="#a78bfa" stroke-width="1" opacity="0.5"/>
+
+  <text x="60" y="720" font-family="monospace" font-size="11" fill="#a78bfa" font-weight="700">KEY THEMES IDENTIFIED</text>
+
+  <circle cx="72" cy="748" r="4" fill="#a78bfa"/>
+  <text x="85" y="752" font-family="monospace" font-size="11" fill="#b0a090">Emotional connection outweighs visual accuracy</text>
+
+  <circle cx="72" cy="772" r="4" fill="#a78bfa"/>
+  <text x="85" y="776" font-family="monospace" font-size="11" fill="#b0a090">Multi-sensory experience required (not just 360° photos)</text>
+
+  <circle cx="72" cy="796" r="4" fill="#a78bfa"/>
+  <text x="85" y="800" font-family="monospace" font-size="11" fill="#b0a090">Cultural urgency is a driver — "before it's gone" narrative</text>
+
+  <circle cx="72" cy="820" r="4" fill="#a78bfa"/>
+  <text x="85" y="824" font-family="monospace" font-size="11" fill="#b0a090">The physical space IS the artifact — not a container for artifacts</text>
+
+  <circle cx="72" cy="844" r="4" fill="#a78bfa"/>
+  <text x="85" y="848" font-family="monospace" font-size="11" fill="#b0a090">Risk: over-explaining turns lived experience into museum exhibit</text>
+</svg>

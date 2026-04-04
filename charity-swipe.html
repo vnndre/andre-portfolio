@@ -4,157 +4,405 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CharitySwipe — Case Study by Andre Espinoza</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0a0f1e; --bg2: #0f172a; --bg3: #1e293b;
-    --border: #1e293b; --border2: #334155;
-    --accent: #fb923c; --accent2: #f97316;
-    --text: #f1f5f9; --text2: #cbd5e1; --text3: #94a3b8;
-    --text4: #64748b; --text5: #475569;
-    --red: #f87171; --green: #4ade80; --yellow: #facc15;
+/* ═══════════ TOKENS ═══════════ */
+:root{
+  --bg:#050403;
+  --bg2:#0b0906;
+  --surface:#11100d;
+  --line:rgba(255,255,255,.06);
+  --line2:rgba(255,255,255,.1);
+  --cream:#ede6d8;
+  --text:#c8bfae;
+  --dim:#6b6256;
+  --faint:#3a352e;
+  --acid:#c8ff00;
+  --accent:#fb923c;
+  --accent2:#f97316;
+  --ember:#ff6030;
+  --adobe:#c4956a;
+  --fd:'Syne',sans-serif;
+  --fb:'Crimson Pro',serif;
+  --fm:'JetBrains Mono',monospace;
+}
+
+/* ═══════════ RESET ═══════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:1.05rem;line-height:1.7;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+
+/* ═══════════ CURSOR ═══════════ */
+@media(hover:hover)and(pointer:fine){
+  *{cursor:none!important}
+  #cur{
+    position:fixed;z-index:9999;pointer-events:none;
+    width:16px;height:16px;
+    border:1.5px solid var(--cream);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    transition:width .3s cubic-bezier(.22,1,.36,1),height .3s cubic-bezier(.22,1,.36,1),
+               background .3s,border-color .3s,opacity .25s;
+    mix-blend-mode:difference;
+    will-change:transform,width,height;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.6; overflow-x: hidden; }
+  #cur.hover{
+    width:56px;height:56px;
+    background:var(--acid);border-color:var(--acid);
+    mix-blend-mode:normal;opacity:.8;
+  }
+  #cur.click{width:40px;height:40px;background:var(--ember);border-color:var(--ember)}
+  #cur-dot{
+    position:fixed;z-index:10000;pointer-events:none;
+    width:5px;height:5px;background:var(--cream);
+    border-radius:50%;transform:translate(-50%,-50%);
+    transition:opacity .2s,transform .15s;will-change:transform;
+  }
+  #cur.hover~#cur-dot{opacity:0;transform:translate(-50%,-50%) scale(0)}
+}
+@media(hover:none),(pointer:coarse){#cur,#cur-dot{display:none!important}}
 
-  /* Custom scrollbars */
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 100px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--text5); }
-  * { scrollbar-width: thin; scrollbar-color: var(--border2) var(--bg); }
+/* ═══════════ SCROLL PROGRESS ═══════════ */
+#progress{position:fixed;top:0;left:0;height:2px;z-index:9000;background:linear-gradient(90deg,var(--acid),var(--ember));width:0;will-change:width}
 
-  /* Noise */
-  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); opacity:0.025; pointer-events:none; z-index:0; }
+/* ═══════════ GRAIN ═══════════ */
+#grain{
+  position:fixed;inset:0;z-index:8000;pointer-events:none;opacity:.03;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-  /* Scroll reveals */
-  .reveal { opacity:0; transform:translateY(24px); transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
-  .reveal.visible { opacity:1; transform:none; }
-  .reveal-left { opacity:0; transform:translateX(-24px); transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
-  .reveal-left.visible { opacity:1; transform:none; }
-  .reveal-right { opacity:0; transform:translateX(24px); transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
-  .reveal-right.visible { opacity:1; transform:none; }
-  .d1{transition-delay:0.05s!important} .d2{transition-delay:0.1s!important} .d3{transition-delay:0.15s!important}
-  .d4{transition-delay:0.2s!important} .d5{transition-delay:0.25s!important} .d6{transition-delay:0.3s!important}
+/* ═══════════ GLOW ═══════════ */
+#glow{
+  position:fixed;width:600px;height:600px;border-radius:50%;pointer-events:none;z-index:0;
+  background:radial-gradient(circle,rgba(251,146,60,.04) 0%,transparent 70%);
+  transform:translate(-50%,-50%);filter:blur(80px);will-change:left,top;
+}
 
-  /* NAV */
-  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:16px 32px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(to bottom,#0a0f1eee,transparent); backdrop-filter:blur(12px); transition:background 0.3s, border-bottom 0.3s; }
-  .nav-logo { font-family:'DM Serif Display',serif; font-size:20px; color:var(--text); text-decoration:none; }
-  .nav-logo span { color:var(--accent); }
+/* ═══════════ SCROLLBAR ═══════════ */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--faint);border-radius:100px}
+::-webkit-scrollbar-thumb:hover{background:var(--dim)}
+*{scrollbar-width:thin;scrollbar-color:var(--faint) var(--bg)}
 
-  /* HERO */
-  .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:120px 24px 80px; position:relative; overflow:hidden; }
-  .hero-glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-60%); width:700px; height:700px; background:radial-gradient(circle,#fb923c14 0%,#f9731608 40%,transparent 70%); pointer-events:none; transition:transform 0.1s ease-out; }
-  .hero-grid { position:absolute; inset:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:48px 48px; opacity:0.3; mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black,transparent); }
-  .hero-tag { display:inline-flex; align-items:center; gap:8px; background:#fb923c12; border:1px solid #fb923c33; border-radius:100px; padding:6px 16px; font-size:12px; color:var(--accent); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:24px; animation:fadeDown 0.8s ease both; }
-  .hero-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); animation:pulse 2s ease infinite; }
-  .hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(52px,10vw,96px); line-height:1.0; text-align:center; animation:fadeUp 0.9s 0.1s ease both; max-width:900px; }
-  .hero h1 .accent { color:var(--accent); }
-  .hero-sub { color:var(--text3); font-size:clamp(15px,2.5vw,19px); text-align:center; max-width:560px; margin-top:20px; line-height:1.65; animation:fadeUp 0.9s 0.2s ease both; }
-  .hero-meta { display:flex; gap:32px; margin-top:40px; flex-wrap:wrap; justify-content:center; animation:fadeUp 0.9s 0.3s ease both; }
-  .hero-meta-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
-  .hero-meta-label { color:var(--text5); font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; }
-  .hero-meta-value { color:var(--text2); font-size:14px; font-weight:500; }
-  .hero-cta { display:flex; gap:12px; margin-top:48px; flex-wrap:wrap; justify-content:center; animation:fadeUp 0.9s 0.4s ease both; }
-  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--bg); border:none; border-radius:12px; padding:14px 28px; font-size:15px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:opacity 0.2s,transform 0.2s; font-family:'DM Sans',sans-serif; }
-  .btn-primary:hover { opacity:0.88; transform:translateY(-2px); }
-  .btn-secondary { background:var(--bg3); color:var(--text3); border:1px solid var(--border2); border-radius:12px; padding:14px 28px; font-size:15px; font-weight:500; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
-  .btn-secondary:hover { background:#273548; color:var(--text2); border-color:var(--text5); }
-  .scroll-hint { position:absolute; bottom:36px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--text5); font-size:11px; animation:fadeUp 1s 0.8s ease both; letter-spacing:0.06em; text-transform:uppercase; }
-  .scroll-line { width:1px; height:36px; background:linear-gradient(to bottom,var(--accent),transparent); animation:scrollLine 2s ease infinite; }
+/* ═══════════ SCROLL REVEALS ═══════════ */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
+.rv.visible{opacity:1;transform:none}
+.rv-l{opacity:0;transform:translateX(-24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
+.rv-l.visible{opacity:1;transform:none}
+.rv-r{opacity:0;transform:translateX(24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
+.rv-r.visible{opacity:1;transform:none}
+.d1{transition-delay:.05s!important}.d2{transition-delay:.1s!important}.d3{transition-delay:.15s!important}
+.d4{transition-delay:.2s!important}.d5{transition-delay:.25s!important}.d6{transition-delay:.3s!important}
 
-  /* SECTIONS */
-  section { position:relative; z-index:1; }
-  .section-inner { max-width:880px; margin:0 auto; padding:80px 24px; }
-  .section-label { display:flex; align-items:center; gap:10px; color:var(--accent); font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:14px; }
-  .section-label::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--border2),transparent); max-width:100px; }
-  .section-title { font-family:'DM Serif Display',serif; font-size:clamp(30px,5vw,46px); line-height:1.15; color:var(--text); margin-bottom:18px; }
-  .section-body { color:var(--text3); font-size:16px; line-height:1.75; max-width:660px; }
-  .section-body p+p { margin-top:14px; }
-  .section-divider { height:1px; background:linear-gradient(to right,transparent,var(--border2) 20%,var(--border2) 80%,transparent); margin:0 24px; }
+/* ═══════════ NAV ═══════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:6000;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.25rem 2.5rem;transition:background .5s,backdrop-filter .5s;
+}
+nav.scrolled{background:rgba(5,4,3,.85);backdrop-filter:blur(20px)}
+.nav-mark{font-family:var(--fd);font-weight:800;font-size:1.1rem;color:var(--cream);letter-spacing:.04em}
+.nav-mark i{color:var(--accent);font-style:normal}
+.nav-r{display:flex;align-items:center;gap:2rem}
+.nav-r a{font-family:var(--fm);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);transition:color .3s}
+.nav-r a:hover{color:var(--cream)}
 
-  /* SPLIT */
-  .split-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:36px; }
-  @media(max-width:640px){.split-grid{grid-template-columns:1fr}}
-  .split-card { background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:26px 22px; transition:border-color 0.2s; }
-  .split-card:hover { border-color:var(--border2); }
-  .split-card-label { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px; }
-  .split-card-title { font-family:'DM Serif Display',serif; font-size:20px; color:var(--text); margin-bottom:10px; line-height:1.25; }
-  .split-card-body { color:var(--text4); font-size:14px; line-height:1.7; }
+/* ═══════════ HERO ═══════════ */
+.hero{
+  min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:120px 24px 80px;position:relative;overflow:hidden;
+}
+.hero-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(251,146,60,.1) 0%,rgba(249,115,22,.05) 40%,transparent 70%);
+  pointer-events:none;transition:transform .1s ease-out;
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:48px 48px;opacity:.3;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black,transparent);
+}
 
-  /* FEATURES */
-  .feature-list { display:flex; flex-direction:column; gap:16px; margin-top:36px; }
-  .feature-card { background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:24px; display:grid; grid-template-columns:44px 1fr; gap:18px; align-items:start; transition:all 0.2s; }
-  .feature-card:hover { border-color:#fb923c33; background:#fb923c05; }
-  .feature-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; background:#fb923c11; border:1px solid #fb923c22; flex-shrink:0; }
-  .feature-title { color:var(--text); font-weight:700; font-size:16px; margin-bottom:6px; }
-  .feature-body { color:var(--text4); font-size:14px; line-height:1.65; }
-  .feature-tag { display:inline-block; background:#fb923c0d; color:var(--accent); border:1px solid #fb923c22; border-radius:6px; padding:2px 8px; font-size:11px; font-weight:600; margin-top:8px; letter-spacing:0.04em; }
+.hero-impact{
+  max-width:640px;text-align:center;margin-bottom:2.5rem;
+  animation:fadeUp .9s ease both;
+}
+.hero-impact p{
+  font-family:var(--fb);font-size:clamp(1.1rem,2vw,1.35rem);
+  font-weight:300;font-style:italic;color:var(--adobe);line-height:1.7;
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(251,146,60,.07);border:1px solid rgba(251,146,60,.2);
+  border-radius:100px;padding:6px 16px;
+  font-family:var(--fm);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:24px;
+  animation:fadeDown .8s ease both;
+}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);animation:pulse 2s ease infinite}
+.hero h1{
+  font-family:var(--fd);font-weight:800;
+  font-size:clamp(3rem,9vw,6rem);line-height:.95;
+  text-align:center;color:var(--cream);
+  animation:fadeUp .9s .1s ease both;max-width:900px;letter-spacing:-.02em;
+}
+.hero h1 .accent{color:var(--accent)}
+.hero-sub{
+  color:var(--dim);font-family:var(--fb);font-size:clamp(15px,2.2vw,18px);
+  text-align:center;max-width:540px;margin-top:20px;line-height:1.7;font-weight:300;
+  animation:fadeUp .9s .2s ease both;
+}
+.hero-meta{
+  display:flex;gap:32px;margin-top:40px;flex-wrap:wrap;justify-content:center;
+  animation:fadeUp .9s .3s ease both;
+}
+.hero-meta-item{display:flex;flex-direction:column;align-items:center;gap:4px}
+.hero-meta-label{font-family:var(--fm);color:var(--faint);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase}
+.hero-meta-value{color:var(--text);font-family:var(--fd);font-size:.85rem;font-weight:600}
+.hero-cta{
+  display:flex;gap:12px;margin-top:48px;flex-wrap:wrap;justify-content:center;
+  animation:fadeUp .9s .4s ease both;
+}
+.btn-primary{
+  background:var(--accent);color:var(--bg);border:none;border-radius:0;
+  padding:14px 28px;font-family:var(--fm);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+  font-weight:500;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:transform .2s,box-shadow .2s;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(251,146,60,.3)}
+.btn-secondary{
+  background:transparent;color:var(--dim);border:1px solid var(--line2);
+  border-radius:0;padding:14px 28px;
+  font-family:var(--fm);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+  font-weight:400;cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;transition:all .3s;
+}
+.btn-secondary:hover{border-color:var(--accent);color:var(--cream)}
+.scroll-hint{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  font-family:var(--fm);color:var(--faint);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;
+  animation:fadeUp 1s .8s ease both;
+}
+.scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,var(--accent),transparent);animation:scrollLine 2s ease infinite}
 
-  /* DESIGN DECISIONS */
-  .decision-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:32px; }
-  @media(max-width:600px){.decision-grid{grid-template-columns:1fr}}
-  .decision-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:22px; transition:border-color 0.2s; }
-  .decision-card:hover { border-color:var(--border2); }
-  .decision-label { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:8px; }
-  .decision-title { color:var(--text2); font-size:15px; font-weight:600; margin-bottom:6px; }
-  .decision-body { color:var(--text4); font-size:13px; line-height:1.65; }
+/* ═══════════ SECTIONS ═══════════ */
+section{position:relative;z-index:1}
+.section-inner{max-width:880px;margin:0 auto;padding:80px 24px}
+.section-label{
+  font-family:var(--fm);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--faint);margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:1rem;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--line);max-width:100px}
+.section-title{
+  font-family:var(--fd);font-weight:700;font-size:clamp(1.8rem,4.5vw,2.8rem);
+  line-height:1.15;color:var(--cream);margin-bottom:18px;
+}
+.section-body{color:var(--text);font-family:var(--fb);font-size:1.05rem;line-height:1.8;max-width:660px;font-weight:300}
+.section-body p+p{margin-top:14px}
+.section-body strong{color:var(--cream);font-weight:500}
+.section-divider{height:1px;background:linear-gradient(to right,transparent,var(--line) 20%,var(--line) 80%,transparent);margin:0 24px}
 
-  /* REFLECTION */
-  .reflection-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:28px; }
-  @media(max-width:700px){.reflection-grid{grid-template-columns:1fr}}
-  .reflection-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:22px; transition:all 0.2s; }
-  .reflection-card:hover { border-color:var(--border2); transform:translateY(-2px); }
-  .reflection-emoji { font-size:26px; margin-bottom:10px; }
-  .reflection-title { color:var(--text); font-weight:700; font-size:15px; margin-bottom:6px; }
-  .reflection-body { color:var(--text4); font-size:13px; line-height:1.65; }
+/* ═══════════ HERO IMAGE ═══════════ */
+.hero-image{
+  margin-top:48px;max-width:720px;width:100%;
+  animation:fadeUp .9s .5s ease both;
+}
+.hero-image img{
+  width:100%;border:1px solid var(--line);
+  box-shadow:0 12px 60px rgba(0,0,0,.4);
+}
 
-  /* QUOTE */
-  .quote-block { border-left:3px solid var(--accent); padding:14px 22px; margin:28px 0; background:#fb923c08; border-radius:0 12px 12px 0; }
-  .quote-text { color:var(--text2); font-size:16px; font-style:italic; line-height:1.7; }
-  .quote-author { color:var(--text5); font-size:13px; margin-top:6px; }
+/* ═══════════ SPLIT CARDS ═══════════ */
+.split-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:36px}
+@media(max-width:640px){.split-grid{grid-template-columns:1fr}}
+.split-card{
+  background:var(--bg2);border:1px solid var(--line);padding:26px 22px;
+  transition:border-color .3s;
+}
+.split-card:hover{border-color:var(--line2)}
+.split-card-label{
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;
+  margin-bottom:10px;
+}
+.split-card-title{font-family:var(--fd);font-size:1.1rem;font-weight:600;color:var(--cream);margin-bottom:10px;line-height:1.25}
+.split-card-body{color:var(--dim);font-family:var(--fb);font-size:.95rem;line-height:1.7;font-weight:300}
 
-  /* CTA */
-  .cta-section { background:linear-gradient(135deg,#fb923c0a,#f9731608); border-top:1px solid #fb923c22; padding:80px 24px; text-align:center; position:relative; overflow:hidden; }
-  .cta-glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:500px; height:300px; background:radial-gradient(ellipse,#fb923c0a,transparent 70%); pointer-events:none; }
-  .cta-title { font-family:'DM Serif Display',serif; font-size:clamp(32px,5vw,52px); margin-bottom:14px; position:relative; }
-  .cta-sub { color:var(--text4); font-size:16px; margin-bottom:32px; max-width:460px; margin-left:auto; margin-right:auto; position:relative; }
+/* ═══════════ FEATURE CARDS ═══════════ */
+.feature-list{display:flex;flex-direction:column;gap:16px;margin-top:36px}
+.feature-card{
+  background:var(--bg2);border:1px solid var(--line);padding:24px;
+  display:grid;grid-template-columns:44px 1fr;gap:18px;align-items:start;
+  transition:all .3s;
+}
+.feature-card:hover{border-color:rgba(251,146,60,.2);background:rgba(251,146,60,.02)}
+.feature-icon{
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;background:rgba(251,146,60,.06);border:1px solid rgba(251,146,60,.12);flex-shrink:0;
+}
+.feature-title{font-family:var(--fd);color:var(--cream);font-weight:600;font-size:1rem;margin-bottom:6px}
+.feature-body{color:var(--dim);font-family:var(--fb);font-size:.95rem;line-height:1.7;font-weight:300}
+.feature-tag{
+  display:inline-block;background:rgba(251,146,60,.05);color:var(--accent);
+  border:1px solid rgba(251,146,60,.15);padding:2px 8px;
+  font-family:var(--fm);font-size:.5rem;letter-spacing:.06em;text-transform:uppercase;
+  margin-top:8px;
+}
 
-  /* FOOTER */
-  footer { background:var(--bg2); border-top:1px solid var(--border); padding:28px 24px; text-align:center; }
-  footer p { color:var(--text5); font-size:13px; }
-  footer a { color:var(--accent); text-decoration:none; }
-  footer a:hover { text-decoration:underline; }
+/* ═══════════ DESIGN DECISIONS ═══════════ */
+.decision-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:32px}
+@media(max-width:600px){.decision-grid{grid-template-columns:1fr}}
+.decision-card{
+  background:var(--bg2);border:1px solid var(--line);padding:22px;
+  transition:border-color .3s;
+}
+.decision-card:hover{border-color:var(--line2)}
+.decision-label{font-family:var(--fm);font-size:.5rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.decision-title{color:var(--cream);font-family:var(--fd);font-size:.95rem;font-weight:600;margin-bottom:6px}
+.decision-body{color:var(--dim);font-family:var(--fb);font-size:.9rem;line-height:1.7;font-weight:300}
 
-  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
-  @keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top;opacity:1}50%{transform:scaleY(1);transform-origin:top;opacity:1}100%{transform:scaleY(1);transform-origin:bottom;opacity:0}}
+/* ═══════════ PROCESS STEPS ═══════════ */
+.process-list{display:flex;flex-direction:column;gap:0;margin-top:36px}
+.process-step{
+  padding:24px 0;border-bottom:1px solid var(--line);
+  display:grid;grid-template-columns:60px 1fr;gap:16px;align-items:start;
+}
+.process-step:first-child{border-top:1px solid var(--line)}
+.process-num{
+  font-family:var(--fd);font-weight:800;font-size:1.6rem;color:var(--faint);line-height:1;
+}
+.process-title{font-family:var(--fd);font-size:1rem;font-weight:600;color:var(--cream);margin-bottom:4px}
+.process-body{color:var(--dim);font-family:var(--fb);font-size:.95rem;line-height:1.7;font-weight:300}
+
+/* ═══════════ REFLECTION CARDS ═══════════ */
+.reflection-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:28px}
+@media(max-width:700px){.reflection-grid{grid-template-columns:1fr}}
+.reflection-card{
+  background:var(--bg2);border:1px solid var(--line);padding:22px;
+  transition:all .3s;
+}
+.reflection-card:hover{border-color:var(--line2);transform:translateY(-2px)}
+.reflection-emoji{font-size:26px;margin-bottom:10px}
+.reflection-title{font-family:var(--fd);color:var(--cream);font-weight:600;font-size:.9rem;margin-bottom:6px}
+.reflection-body{color:var(--dim);font-family:var(--fb);font-size:.85rem;line-height:1.7;font-weight:300}
+
+/* ═══════════ QUOTE ═══════════ */
+.quote-block{
+  border-left:2px solid var(--accent);padding:1.25rem 1.5rem;margin:28px 0;
+  background:rgba(251,146,60,.03);position:relative;
+}
+.quote-text{
+  font-family:var(--fb);color:var(--cream);font-size:1.15rem;font-style:italic;
+  line-height:1.7;font-weight:300;
+}
+.quote-author{font-family:var(--fm);color:var(--faint);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;margin-top:8px}
+
+/* ═══════════ CTA SECTION ═══════════ */
+.cta-section{
+  border-top:1px solid var(--line);padding:80px 24px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.cta-glow{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:500px;height:300px;
+  background:radial-gradient(ellipse,rgba(251,146,60,.06),transparent 70%);pointer-events:none;
+}
+.cta-title{font-family:var(--fd);font-weight:700;font-size:clamp(1.8rem,5vw,3rem);color:var(--cream);margin-bottom:14px;position:relative}
+.cta-sub{color:var(--dim);font-family:var(--fb);font-size:1rem;font-weight:300;margin-bottom:32px;max-width:460px;margin-left:auto;margin-right:auto;position:relative}
+
+/* ═══════════ FIXED CTA ═══════════ */
+.fixed-cta{
+  position:fixed;bottom:2rem;right:2rem;z-index:5500;
+  font-family:var(--fm);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--bg);background:var(--acid);
+  border:none;padding:.6rem 1.2rem;display:flex;align-items:center;gap:.5rem;
+  box-shadow:0 4px 20px rgba(200,255,0,.2);
+  transition:transform .3s,box-shadow .3s,background .3s;
+}
+.fixed-cta:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(200,255,0,.3)}
+.fixed-cta.copied{background:var(--ember)}
+.fixed-cta .dot{width:5px;height:5px;background:var(--bg);border-radius:50%;animation:blink 2s ease infinite}
+@media(max-width:600px){.fixed-cta{bottom:1rem;right:1rem;font-size:.5rem;padding:.5rem 1rem}}
+
+/* ═══════════ FOOTER ═══════════ */
+footer{padding:2rem 2.5rem;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+footer span,footer a{font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+footer a:hover{color:var(--acid)}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media(max-width:768px){
+  nav{padding:1rem 1.25rem}
+  .section-inner{padding:60px 20px}
+  .hero{padding:100px 20px 60px}
+  .split-grid{grid-template-columns:1fr}
+  .decision-grid{grid-template-columns:1fr}
+  .reflection-grid{grid-template-columns:1fr}
+  .process-step{grid-template-columns:40px 1fr}
+  footer{padding:1.5rem}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+@keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top;opacity:1}50%{transform:scaleY(1);transform-origin:top;opacity:1}100%{transform:scaleY(1);transform-origin:bottom;opacity:0}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 </style>
 </head>
 <body>
 
+<!-- OVERLAYS -->
+<div id="cur"></div>
+<div id="cur-dot"></div>
+<div id="progress"></div>
+<div id="grain"></div>
+<div id="glow"></div>
+
+<!-- NAV -->
 <nav>
-  <a href="#" class="nav-logo">charity<span>swipe</span></a>
+  <a href="index.html" class="nav-mark">charity<i>swipe</i></a>
+  <div class="nav-r">
+    <a href="index.html">&#8592; All Work</a>
+  </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero-grid"></div>
   <div class="hero-glow"></div>
-  <div class="hero-tag"><span class="hero-dot"></span>UX Design · Interaction Design</div>
-  <h1>Giving back,<br/><em class="accent">swiped right</em></h1>
-  <p class="hero-sub">A platform connecting tech-savvy users with charitable organizations via a swipe-based interaction model — adapted from dating apps to make giving feel native and effortless.</p>
+
+  <div class="hero-impact">
+    <p>What if finding a nonprofit felt like swiping on Hinge? A swipe-based discovery app connecting donors with causes through the interaction patterns they already know.</p>
+  </div>
+
+  <div class="hero-tag"><span class="hero-dot"></span>UX Design &middot; Interaction Design</div>
+  <h1>Giving back,<br/><span class="accent">swiped right.</span></h1>
+  <p class="hero-sub">Adapting the most addictive gesture in mobile design for something that actually matters — without losing the ethics along the way.</p>
+
   <div class="hero-meta">
     <div class="hero-meta-item"><span class="hero-meta-label">Type</span><span class="hero-meta-value">UX Design</span></div>
-    <div class="hero-meta-item"><span class="hero-meta-label">Duration</span><span class="hero-meta-value">5 months</span></div>
+    <div class="hero-meta-item"><span class="hero-meta-label">Duration</span><span class="hero-meta-value">5 Months</span></div>
     <div class="hero-meta-item"><span class="hero-meta-label">Team</span><span class="hero-meta-value">Collaborative</span></div>
     <div class="hero-meta-item"><span class="hero-meta-label">Tools</span><span class="hero-meta-value">Figma, Miro</span></div>
   </div>
+
   <div class="hero-cta">
-    <a href="#overview" class="btn-secondary">Read Case Study ↓</a>
+    <a href="#overview" class="btn-secondary">Read Case Study &#8595;</a>
   </div>
+
+  <div class="hero-image">
+    <img src="images/charityswipe-hero.png" alt="CharitySwipe app screens showing swipe interface, organization profiles, and explore page"/>
+  </div>
+
   <div class="scroll-hint"><div class="scroll-line"></div>scroll</div>
 </section>
 
@@ -163,19 +411,54 @@
 <!-- OVERVIEW -->
 <section id="overview">
   <div class="section-inner">
-    <div class="section-label reveal">01 — Overview</div>
-    <h2 class="section-title reveal">The Challenge</h2>
-    <div class="section-body reveal">
-      <p>How do you adapt the addictive usability of swipe-based apps to charitable giving without losing ethical grounding? Make it feel native — not like a chore. That was the core design challenge of CharitySwipe.</p>
+    <div class="section-label rv">01 &mdash; Overview</div>
+    <h2 class="section-title rv">The design tension nobody asked about</h2>
+    <div class="section-body rv">
+      <p>Dating apps figured out something powerful: the swipe is the lowest-friction decision a human can make on a phone. Right or left. Yes or no. It's binary, it's fast, and it's <strong>deeply satisfying</strong>.</p>
+      <p>So here's the uncomfortable question: can you take a mechanic engineered for romantic dopamine hits and repurpose it for charitable giving without it feeling gross? That was the entire project.</p>
     </div>
     <div class="split-grid">
-      <div class="split-card reveal-left d1">
-        <div class="split-card-label" style="color:var(--red)">⚠ Challenge</div>
-        <div class="split-card-body">Persuasive mechanics from dating apps can feel manipulative in a charitable context</div>
+      <div class="split-card rv-l d1">
+        <div class="split-card-label" style="color:var(--ember)">Challenge</div>
+        <div class="split-card-title">Persuasive mechanics from dating apps can feel manipulative in a charitable context</div>
+        <div class="split-card-body">The same patterns that keep people swiping at 2am on Hinge could trivialize the act of giving. We needed to borrow the usability without importing the dark patterns.</div>
       </div>
-      <div class="split-card reveal-right d2">
-        <div class="split-card-label" style="color:var(--green)">✓ Goal</div>
-        <div class="split-card-body">Make giving feel as natural as swiping — without exploiting the user's goodwill</div>
+      <div class="split-card rv-r d2">
+        <div class="split-card-label" style="color:var(--acid)">Goal</div>
+        <div class="split-card-title">Make giving feel as natural as swiping — without exploiting goodwill</div>
+        <div class="split-card-body">Low friction, high intention. The swipe should surface organizations efficiently, but every interaction should encourage the user to actually read, think, and choose deliberately.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- RESEARCH -->
+<section>
+  <div class="section-inner">
+    <div class="section-label rv">02 &mdash; Research</div>
+    <h2 class="section-title rv">Understanding how people actually give</h2>
+    <div class="section-body rv">
+      <p>Before touching Figma, we spent the first six weeks on research. Competitive analysis of GiveDirectly, Charity Navigator, GoFundMe. User interviews with 12 participants aged 22-35 — the demographic most likely to use swipe-based apps and least likely to have an established charitable giving habit.</p>
+      <p>The key finding was surprising: <strong>people don't avoid donating because they don't care</strong>. They avoid it because the discovery process feels overwhelming. Too many organizations, not enough trust signals, and no way to casually browse without committing to a 20-minute research session.</p>
+    </div>
+
+    <div class="quote-block rv">
+      <div class="quote-text">"I want to give money to good causes but every charity website looks like it was designed in 2009 and I don't know who to trust."</div>
+      <div class="quote-author">— Research participant, 26</div>
+    </div>
+
+    <div class="split-grid">
+      <div class="split-card rv-l d1">
+        <div class="split-card-label" style="color:var(--accent)">Insight</div>
+        <div class="split-card-title">Discovery is the bottleneck, not generosity</div>
+        <div class="split-card-body">9 of 12 participants said they'd donate more if they had a trusted, low-effort way to find organizations aligned with their values.</div>
+      </div>
+      <div class="split-card rv-r d2">
+        <div class="split-card-label" style="color:var(--accent)">Insight</div>
+        <div class="split-card-title">Familiarity breeds comfort, not contempt</div>
+        <div class="split-card-body">Participants immediately understood the swipe paradigm. The mental model was already there — we just needed to redirect it toward a different kind of connection.</div>
       </div>
     </div>
   </div>
@@ -186,51 +469,95 @@
 <!-- DESIGN -->
 <section>
   <div class="section-inner">
-    <div class="section-label reveal">02 — Design</div>
-    <h2 class="section-title reveal">Five core screens</h2>
-    <div class="section-body reveal">
-      <p>A Figma-designed platform with five core screens, each built for engagement and ease.</p>
+    <div class="section-label rv">03 &mdash; Design</div>
+    <h2 class="section-title rv">Five core screens, one interaction model</h2>
+    <div class="section-body rv">
+      <p>Every screen was designed around a single question: does this reduce friction toward a meaningful connection between user and organization? If it just looked cool but didn't serve that goal, we cut it.</p>
     </div>
 
     <div class="feature-list">
-      <div class="feature-card reveal d1">
-        <div class="feature-icon">🔍</div>
+      <div class="feature-card rv d1">
+        <div class="feature-icon">&#128269;</div>
         <div>
           <div class="feature-title">Explore Page</div>
-          <div class="feature-body">Discovery-first landing that surfaces organizations matching user interests.</div>
+          <div class="feature-body">Discovery-first landing that surfaces organizations matching user interests. Algorithm-driven but transparent — users always know why something is being shown to them. No black-box "for you" feeds.</div>
           <div class="feature-tag">Discovery UX</div>
         </div>
       </div>
-      <div class="feature-card reveal d2">
-        <div class="feature-icon">🔎</div>
+      <div class="feature-card rv d2">
+        <div class="feature-icon">&#128270;</div>
         <div>
-          <div class="feature-title">Search</div>
-          <div class="feature-body">Filtered search for specific causes, organizations, or locations.</div>
+          <div class="feature-title">Search + Filters</div>
+          <div class="feature-body">Cause-based filtering (environment, education, health, mutual aid), location radius, and organization size. Designed for users who already know what they care about and want to skip the browsing phase.</div>
           <div class="feature-tag">Information Architecture</div>
         </div>
       </div>
-      <div class="feature-card reveal d3">
-        <div class="feature-icon">🏛️</div>
+      <div class="feature-card rv d3">
+        <div class="feature-icon">&#127963;&#65039;</div>
         <div>
-          <div class="feature-title">Organization List + Profile</div>
-          <div class="feature-body">Browse orgs, tap into detailed profiles with mission, impact data, and donate/volunteer CTAs.</div>
+          <div class="feature-title">Organization Profile</div>
+          <div class="feature-body">Mission statement, impact metrics, financial transparency score, and volunteer/donate CTAs. We spent a lot of time on the trust signals here — star ratings felt reductive, so we went with verified impact data and third-party audit badges.</div>
           <div class="feature-tag">Content Design</div>
         </div>
       </div>
-      <div class="feature-card reveal d4">
-        <div class="feature-icon">👤</div>
+      <div class="feature-card rv d4">
+        <div class="feature-icon">&#128100;</div>
         <div>
           <div class="feature-title">User Profile</div>
-          <div class="feature-body">Personal giving history, saved orgs, and preferences.</div>
+          <div class="feature-body">Giving history, saved organizations, and preference tuning. No public leaderboards or social comparison — we deliberately avoided gamifying generosity into a competitive sport.</div>
           <div class="feature-tag">Personalization</div>
         </div>
       </div>
-      <div class="feature-card reveal d5">
-        <div class="feature-icon">👆</div>
+      <div class="feature-card rv d5">
+        <div class="feature-icon">&#128070;</div>
         <div>
           <div class="feature-title">Swipe Interaction</div>
-          <div class="feature-body">The core mechanic — swipe right to save/support, left to skip. Familiar, fast, low friction.</div>
+          <div class="feature-body">The core mechanic. Swipe right to save, left to skip. But we added a deliberate slowdown: each card shows enough information that the swipe is an informed choice, not a reflex. Card height was intentionally tall to prevent rapid-fire swiping.</div>
           <div class="feature-tag">Interaction Design</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- SWIPE MECHANICS -->
+<section>
+  <div class="section-inner">
+    <div class="section-label rv">04 &mdash; The Swipe</div>
+    <h2 class="section-title rv">Designing friction on purpose</h2>
+    <div class="section-body rv">
+      <p>The whole point of a swipe is speed. So why would we slow it down? Because <strong>speed without intention is just noise</strong>. In dating apps, a fast swipe means you're filtering on appearance. In a charity context, a fast swipe means you're not reading — and if you're not reading, you're not choosing.</p>
+    </div>
+
+    <div class="process-list">
+      <div class="process-step rv d1">
+        <div class="process-num">01</div>
+        <div>
+          <div class="process-title">Card content density</div>
+          <div class="process-body">Each swipe card shows the org name, cause category, a one-line mission, and one key impact stat. Enough to make an informed decision. Not so much that it becomes a wall of text.</div>
+        </div>
+      </div>
+      <div class="process-step rv d2">
+        <div class="process-num">02</div>
+        <div>
+          <div class="process-title">Swipe threshold tuning</div>
+          <div class="process-body">We increased the minimum swipe distance by 40% compared to typical dating app patterns. This prevents accidental swipes and forces a slightly more deliberate gesture — small enough that it doesn't feel clunky, big enough that it's never an accident.</div>
+        </div>
+      </div>
+      <div class="process-step rv d3">
+        <div class="process-num">03</div>
+        <div>
+          <div class="process-title">No infinite scroll</div>
+          <div class="process-body">Batches of 10 organizations. After each batch, a brief summary of what you saved and a prompt to explore those further. The deck runs out on purpose — giving shouldn't feel like an endless feed.</div>
+        </div>
+      </div>
+      <div class="process-step rv d4">
+        <div class="process-num">04</div>
+        <div>
+          <div class="process-title">Undo without shame</div>
+          <div class="process-body">Single-tap undo on accidental skips. No "Super Swipe" upsells, no premium features gating basic interactions. The monetization model was never about selling swipes.</div>
         </div>
       </div>
     </div>
@@ -242,28 +569,31 @@
 <!-- ETHICS -->
 <section>
   <div class="section-inner">
-    <div class="section-label reveal">03 — The Ethics Question</div>
-    <h2 class="section-title reveal">Where design meets responsibility</h2>
+    <div class="section-label rv">05 &mdash; The Ethics Question</div>
+    <h2 class="section-title rv">Where design meets responsibility</h2>
+    <div class="section-body rv">
+      <p>Every design review came back to the same question: are we helping people give, or are we making them feel like they're giving? The distinction matters more than you'd think.</p>
+    </div>
     <div class="decision-grid">
-      <div class="decision-card reveal d1">
-        <div class="decision-label" style="color:#fb923c">Tension</div>
+      <div class="decision-card rv d1">
+        <div class="decision-label" style="color:var(--accent)">Tension</div>
         <div class="decision-title">Persuasion vs manipulation</div>
-        <div class="decision-body">Dating apps optimize for addiction. Charity apps should optimize for intention. Where's the line?</div>
+        <div class="decision-body">Dating apps optimize for addiction. Charity apps should optimize for intention. We drew the line at anything that made the user feel guilty for not engaging — no push notifications guilt-tripping about "organizations waiting for you."</div>
       </div>
-      <div class="decision-card reveal d2">
-        <div class="decision-label" style="color:#f97316">Tension</div>
+      <div class="decision-card rv d2">
+        <div class="decision-label" style="color:var(--accent)">Tension</div>
         <div class="decision-title">Swipe fatigue</div>
-        <div class="decision-body">If users swipe through 50 orgs in a minute, are they actually choosing? Design must encourage deliberation.</div>
+        <div class="decision-body">If users swipe through 50 orgs in a minute, are they actually choosing? The batch system and deliberate card density were our answer. Slower swiping, better matches.</div>
       </div>
-      <div class="decision-card reveal d3">
-        <div class="decision-label" style="color:#fb923c">Tension</div>
+      <div class="decision-card rv d3">
+        <div class="decision-label" style="color:var(--accent)">Tension</div>
         <div class="decision-title">Gamification boundaries</div>
-        <div class="decision-body">Streaks, badges, and points can cheapen the act of giving. We chose meaning over metrics.</div>
+        <div class="decision-body">Streaks, badges, and points can cheapen the act of giving. We chose meaning over metrics. Your profile shows impact — "you helped fund 3 clean water projects" — not "you're on a 14-day streak."</div>
       </div>
-      <div class="decision-card reveal d4">
-        <div class="decision-label" style="color:#f97316">Tension</div>
+      <div class="decision-card rv d4">
+        <div class="decision-label" style="color:var(--accent)">Tension</div>
         <div class="decision-title">Trust signals</div>
-        <div class="decision-body">Users need to trust that their engagement leads to real impact. Transparency in org profiles was non-negotiable.</div>
+        <div class="decision-body">Users need to trust that their engagement leads to real impact. Every org profile links to third-party audits, shows financial breakdowns, and displays verified impact data. Transparency was non-negotiable.</div>
       </div>
     </div>
   </div>
@@ -274,30 +604,32 @@
 <!-- REFLECTION -->
 <section>
   <div class="section-inner">
-    <div class="section-label reveal">04 — Reflection</div>
-    <h2 class="section-title reveal">Lessons from five months of ethical design</h2>
-    <div class="section-body reveal"><p>CharitySwipe was a 5-month collaborative project that forced the team to think deeply about the ethics of persuasive design.</p></div>
+    <div class="section-label rv">06 &mdash; Reflection</div>
+    <h2 class="section-title rv">What five months of ethical design taught me</h2>
+    <div class="section-body rv">
+      <p>CharitySwipe was a 5-month collaborative project that forced the team to think deeply about <strong>what we owe the people using the things we design</strong>. It's easy to say "don't use dark patterns." It's harder to define where a helpful nudge ends and a manipulative push begins.</p>
+    </div>
 
-    <div class="quote-block reveal">
+    <div class="quote-block rv">
       <div class="quote-text">"The hardest part wasn't making it feel like a dating app. It was making sure it didn't feel like one in the wrong ways."</div>
       <div class="quote-author">— Andre Espinoza</div>
     </div>
 
     <div class="reflection-grid">
-      <div class="reflection-card reveal d1">
-        <div class="reflection-emoji">⚖️</div>
+      <div class="reflection-card rv d1">
+        <div class="reflection-emoji">&#9878;&#65039;</div>
         <div class="reflection-title">Ethics as design constraint</div>
-        <div class="reflection-body">When persuasive mechanics meet charitable giving, ethics isn't optional — it's the primary design constraint</div>
+        <div class="reflection-body">When persuasive mechanics meet charitable giving, ethics isn't an afterthought — it's the primary constraint that shapes every interaction, every copy decision, every animation timing.</div>
       </div>
-      <div class="reflection-card reveal d2">
-        <div class="reflection-emoji">🤝</div>
-        <div class="reflection-title">Collaboration over 5 months</div>
-        <div class="reflection-body">Remote collaboration requires explicit design decisions, shared frameworks, and patience</div>
+      <div class="reflection-card rv d2">
+        <div class="reflection-emoji">&#129309;</div>
+        <div class="reflection-title">Remote collaboration at scale</div>
+        <div class="reflection-body">Five months of remote collaboration with a multi-person team. Explicit design decisions, shared Miro boards, weekly critique sessions. The process was as designed as the product.</div>
       </div>
-      <div class="reflection-card reveal d3">
-        <div class="reflection-emoji">🔄</div>
-        <div class="reflection-title">Familiar ≠ appropriate</div>
-        <div class="reflection-body">Just because a pattern works in one context doesn't mean it translates. Every interaction needs re-evaluation.</div>
+      <div class="reflection-card rv d3">
+        <div class="reflection-emoji">&#128260;</div>
+        <div class="reflection-title">Familiar does not mean appropriate</div>
+        <div class="reflection-body">Just because a pattern works in one context doesn't mean it translates. Every interaction we borrowed from dating apps needed re-evaluation through a completely different ethical lens.</div>
       </div>
     </div>
   </div>
@@ -308,40 +640,98 @@
 <!-- CTA -->
 <div class="cta-section">
   <div class="cta-glow"></div>
-  <h2 class="cta-title reveal">Want to discuss ethical UX?</h2>
-  <p class="cta-sub reveal">Let's talk about designing persuasive experiences that respect the user.</p>
-  <div class="hero-cta reveal">
-    <a href="mailto:andre@andre-espinoza.com" class="btn-primary">Get in Touch</a>
-    <a href="index.html" class="btn-secondary">← Back to Portfolio</a>
+  <h2 class="cta-title rv">Want to talk ethical UX?</h2>
+  <p class="cta-sub rv">I'm into conversations about designing persuasive experiences that respect the people using them.</p>
+  <div class="hero-cta rv">
+    <a href="mailto:andreespinoza02@gmail.com" class="btn-primary">Get in Touch</a>
+    <a href="index.html" class="btn-secondary">&#8592; Back to Portfolio</a>
   </div>
 </div>
 
+<!-- FOOTER -->
 <footer>
-  <p>Designed & built by <a href="https://andre-espinoza.com">Andre Espinoza</a></p>
+  <span>&copy; 2026 Andre Espinoza</span>
+  <a href="index.html">Back to Portfolio &#8593;</a>
 </footer>
 
+<!-- FIXED CTA -->
+<button class="fixed-cta" id="cta-copy">
+  <span class="dot"></span>
+  <span id="cta-text">Copy Email</span>
+</button>
+
 <script>
-// ── SCROLL REVEALS ─────────────────────────────────────────────
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+/* ── SCROLL REVEALS ── */
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv,.rv-l,.rv-r').forEach(function(el){obs.observe(el)});
 
-// ── PARALLAX HERO GLOW ─────────────────────────────────────────
-document.addEventListener('mousemove', e => {
-  const glow = document.querySelector('.hero-glow');
-  if (!glow) return;
-  const x = (e.clientX / window.innerWidth - 0.5) * 30;
-  const y = (e.clientY / window.innerHeight - 0.5) * 30;
-  glow.style.transform = `translate(calc(-50% + ${x}px), calc(-60% + ${y}px))`;
+/* ── SCROLL PROGRESS ── */
+window.addEventListener('scroll',function(){
+  var h=document.documentElement.scrollHeight-window.innerHeight;
+  var p=h>0?(window.scrollY/h)*100:0;
+  document.getElementById('progress').style.width=p+'%';
 });
 
-// ── NAV SCROLL ─────────────────────────────────────────────────
-const nav = document.querySelector('nav');
-window.addEventListener('scroll', () => {
-  nav.style.background = window.scrollY > 60 ? '#0a0f1ef2' : 'linear-gradient(to bottom, #0a0f1eee, transparent)';
-  nav.style.borderBottom = window.scrollY > 60 ? '1px solid #1e293b' : 'none';
+/* ── NAV SCROLL ── */
+var nav=document.querySelector('nav');
+window.addEventListener('scroll',function(){
+  nav.classList.toggle('scrolled',window.scrollY>60);
 });
+
+/* ── PARALLAX GLOW ── */
+document.addEventListener('mousemove',function(e){
+  var g=document.getElementById('glow');
+  if(g){g.style.left=e.clientX+'px';g.style.top=e.clientY+'px'}
+  var hg=document.querySelector('.hero-glow');
+  if(hg){
+    var x=(e.clientX/window.innerWidth-.5)*30;
+    var y=(e.clientY/window.innerHeight-.5)*30;
+    hg.style.transform='translate(calc(-50% + '+x+'px), calc(-60% + '+y+'px))';
+  }
+});
+
+/* ── CUSTOM CURSOR ── */
+(function(){
+  var cur=document.getElementById('cur');
+  var dot=document.getElementById('cur-dot');
+  if(!cur||!dot)return;
+  var cx=0,cy=0,dx=0,dy=0;
+  document.addEventListener('mousemove',function(e){
+    cx=e.clientX;cy=e.clientY;
+    dot.style.left=cx+'px';dot.style.top=cy+'px';
+  });
+  function loop(){
+    dx+=(cx-dx)*.15;dy+=(cy-dy)*.15;
+    cur.style.left=dx+'px';cur.style.top=dy+'px';
+    requestAnimationFrame(loop);
+  }
+  loop();
+  document.querySelectorAll('a,button,.feature-card,.split-card,.decision-card,.reflection-card').forEach(function(el){
+    el.addEventListener('mouseenter',function(){cur.classList.add('hover')});
+    el.addEventListener('mouseleave',function(){cur.classList.remove('hover')});
+  });
+  document.addEventListener('mousedown',function(){cur.classList.add('click')});
+  document.addEventListener('mouseup',function(){cur.classList.remove('click')});
+})();
+
+/* ── COPY EMAIL CTA ── */
+(function(){
+  var btn=document.getElementById('cta-copy');
+  var txt=document.getElementById('cta-text');
+  if(!btn)return;
+  btn.addEventListener('click',function(){
+    navigator.clipboard.writeText('andreespinoza02@gmail.com').then(function(){
+      txt.textContent='Copied!';
+      btn.classList.add('copied');
+      setTimeout(function(){
+        txt.textContent='Copy Email';
+        btn.classList.remove('copied');
+      },2000);
+    });
+  });
+})();
 </script>
 </body>
 </html>

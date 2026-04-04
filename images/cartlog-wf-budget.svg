@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="375" height="812" viewBox="0 0 375 812">
+  <style>
+    text { font-family: 'Helvetica Neue', sans-serif; }
+    .label { font-size: 11px; fill: #999; font-style: italic; }
+    .heading { font-size: 16px; fill: #444; font-weight: 600; }
+    .subtext { font-size: 12px; fill: #888; }
+    .annotation { font-size: 10px; fill: #c44; font-style: italic; }
+  </style>
+
+  <!-- Phone frame -->
+  <rect x="0" y="0" width="375" height="812" rx="40" fill="#fafafa" stroke="#ccc" stroke-width="2"/>
+  <rect x="0" y="0" width="375" height="44" rx="40" fill="#f0f0f0"/>
+  <text x="187" y="30" text-anchor="middle" font-size="13" fill="#666">9:41</text>
+
+  <!-- Header -->
+  <text x="30" y="85" class="heading">cartlog</text>
+
+  <!-- Budget title + export -->
+  <text x="30" y="120" font-size="20" fill="#444" font-weight="700" font-family="Georgia, serif">Budget</text>
+  <rect x="290" y="105" width="60" height="28" rx="8" fill="none" stroke="#ccc" stroke-dasharray="4"/>
+  <text x="320" y="123" text-anchor="middle" font-size="10" fill="#999">Export</text>
+
+  <!-- Toggle: By Month / All Time -->
+  <rect x="20" y="140" width="335" height="36" rx="10" fill="none" stroke="#ccc"/>
+  <rect x="24" y="144" width="163" height="28" rx="8" fill="#ddd"/>
+  <text x="106" y="162" text-anchor="middle" font-size="12" fill="#555" font-weight="600">By Month</text>
+  <text x="272" y="162" text-anchor="middle" font-size="12" fill="#aaa">All Time</text>
+
+  <!-- Month navigation -->
+  <rect x="30" y="190" width="28" height="28" rx="8" fill="none" stroke="#ccc"/>
+  <text x="44" y="209" text-anchor="middle" font-size="14" fill="#999">‹</text>
+  <text x="187" y="209" text-anchor="middle" font-size="14" fill="#555" font-weight="500">March 2026 ▾</text>
+  <rect x="317" y="190" width="28" height="28" rx="8" fill="none" stroke="#ccc"/>
+  <text x="331" y="209" text-anchor="middle" font-size="14" fill="#999">›</text>
+
+  <!-- Pie chart wireframe (donut) -->
+  <circle cx="187" cy="330" r="100" fill="none" stroke="#ccc" stroke-width="40"/>
+
+  <!-- Pie segments represented as arcs -->
+  <circle cx="187" cy="330" r="100" fill="none" stroke="#bbb" stroke-width="40" stroke-dasharray="80 548" stroke-dashoffset="0"/>
+  <circle cx="187" cy="330" r="100" fill="none" stroke="#ddd" stroke-width="40" stroke-dasharray="60 568" stroke-dashoffset="-80"/>
+  <circle cx="187" cy="330" r="100" fill="none" stroke="#eee" stroke-width="40" stroke-dasharray="45 583" stroke-dashoffset="-140"/>
+  <circle cx="187" cy="330" r="100" fill="none" stroke="#e8e8e8" stroke-width="40" stroke-dasharray="35 593" stroke-dashoffset="-185"/>
+
+  <!-- Center total -->
+  <text x="187" y="324" text-anchor="middle" font-size="20" fill="#555" font-weight="700">$347.42</text>
+  <text x="187" y="345" text-anchor="middle" font-size="11" fill="#aaa">total spent</text>
+
+  <!-- Category breakdown list -->
+  <g transform="translate(0,450)">
+    <!-- Produce -->
+    <circle cx="34" cy="12" r="5" fill="#aaa"/>
+    <text x="48" y="16" font-size="13" fill="#666">Produce</text>
+    <text x="310" y="16" text-anchor="end" font-size="13" fill="#555" font-weight="600">$89.20</text>
+    <text x="340" y="16" text-anchor="end" font-size="12" fill="#bbb">›</text>
+    <rect x="30" y="24" width="310" height="5" rx="3" fill="#eee"/>
+    <rect x="30" y="24" width="310" height="5" rx="3" fill="#ccc"/>
+
+    <!-- Dairy -->
+    <circle cx="34" cy="52" r="5" fill="#bbb"/>
+    <text x="48" y="56" font-size="13" fill="#666">Dairy &amp; Eggs</text>
+    <text x="310" y="56" text-anchor="end" font-size="13" fill="#555" font-weight="600">$67.15</text>
+    <text x="340" y="56" text-anchor="end" font-size="12" fill="#bbb">›</text>
+    <rect x="30" y="64" width="310" height="5" rx="3" fill="#eee"/>
+    <rect x="30" y="64" width="233" height="5" rx="3" fill="#ccc"/>
+
+    <!-- Meat -->
+    <circle cx="34" cy="92" r="5" fill="#ccc"/>
+    <text x="48" y="96" font-size="13" fill="#666">Meat &amp; Seafood</text>
+    <text x="310" y="96" text-anchor="end" font-size="13" fill="#555" font-weight="600">$52.80</text>
+    <text x="340" y="96" text-anchor="end" font-size="12" fill="#bbb">›</text>
+    <rect x="30" y="104" width="310" height="5" rx="3" fill="#eee"/>
+    <rect x="30" y="104" width="183" height="5" rx="3" fill="#ccc"/>
+
+    <!-- Beverages -->
+    <circle cx="34" cy="132" r="5" fill="#ddd"/>
+    <text x="48" y="136" font-size="13" fill="#666">Beverages</text>
+    <text x="310" y="136" text-anchor="end" font-size="13" fill="#555" font-weight="600">$38.27</text>
+    <text x="340" y="136" text-anchor="end" font-size="12" fill="#bbb">›</text>
+    <rect x="30" y="144" width="310" height="5" rx="3" fill="#eee"/>
+    <rect x="30" y="144" width="133" height="5" rx="3" fill="#ccc"/>
+  </g>
+
+  <!-- Annotations -->
+  <text x="30" y="650" class="annotation">interactive donut — hover shows category detail</text>
+  <text x="30" y="665" class="annotation">tap category → monthly trend view with bar chart</text>
+  <text x="30" y="680" class="annotation">calendar picker for month navigation</text>
+
+  <!-- Bottom tab bar -->
+  <rect x="0" y="730" width="375" height="82" fill="#f5f5f5" stroke="#ddd"/>
+  <circle cx="94" cy="760" r="14" fill="none" stroke="#ccc"/>
+  <text x="94" y="790" text-anchor="middle" font-size="10" fill="#999">History</text>
+  <circle cx="187" cy="752" r="22" fill="none" stroke="#ccc"/>
+  <text x="187" y="790" text-anchor="middle" font-size="10" fill="#999">Scan</text>
+  <circle cx="281" cy="760" r="14" fill="none" stroke="#555" stroke-width="2"/>
+  <text x="281" y="790" text-anchor="middle" font-size="10" fill="#555" font-weight="600">Budget</text>
+
+  <text x="187" y="30" text-anchor="middle" font-size="9" fill="#bbb" transform="translate(0,785)">WIREFRAME — Budget Screen (monthly view)</text>
+</svg>

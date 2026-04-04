@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <defs>
+    <radialGradient id="warmGlow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#3a2810" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#1a1208" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#0a0604"/>
+    </radialGradient>
+    <radialGradient id="spotLight1" cx="30%" cy="25%" r="30%">
+      <stop offset="0%" stop-color="#c8a44a" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <radialGradient id="spotLight2" cx="70%" cy="30%" r="25%">
+      <stop offset="0%" stop-color="#c8a44a" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="transparent"/>
+    </radialGradient>
+    <filter id="neon">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background — warm dark interior -->
+  <rect width="1200" height="675" fill="#0a0604"/>
+  <rect width="1200" height="675" fill="url(#warmGlow)"/>
+  <rect width="1200" height="675" fill="url(#spotLight1)"/>
+  <rect width="1200" height="675" fill="url(#spotLight2)"/>
+
+  <!-- Wooden floor perspective -->
+  <polygon points="0,675 1200,675 1050,380 150,380" fill="#1a1208" stroke="#2a1e10" stroke-width="0.5"/>
+  <!-- Floor planks -->
+  <line x1="200" y1="380" x2="100" y2="675" stroke="#2a1e10" stroke-width="1" opacity="0.4"/>
+  <line x1="350" y1="380" x2="300" y2="675" stroke="#2a1e10" stroke-width="1" opacity="0.4"/>
+  <line x1="500" y1="380" x2="480" y2="675" stroke="#2a1e10" stroke-width="1" opacity="0.4"/>
+  <line x1="600" y1="380" x2="600" y2="675" stroke="#2a1e10" stroke-width="1" opacity="0.4"/>
+  <line x1="700" y1="380" x2="720" y2="675" stroke="#2a1e10" stroke-width="1" opacity="0.4"/>
+  <line x1="850" y1="380" x2="900" y2="675" stroke="#2a1e10" stroke-width="1" opacity="0.4"/>
+  <line x1="1000" y1="380" x2="1100" y2="675" stroke="#2a1e10" stroke-width="1" opacity="0.4"/>
+
+  <!-- Back wall -->
+  <rect x="150" y="80" width="900" height="300" fill="#1a1410" stroke="#2a2018" stroke-width="1"/>
+
+  <!-- Stage area (back center) -->
+  <rect x="350" y="280" width="500" height="100" fill="#221a10" stroke="#3a2e18" stroke-width="1"/>
+  <rect x="380" y="290" width="440" height="10" rx="2" fill="#2a2015"/>
+
+  <!-- Stage lights -->
+  <circle cx="450" cy="100" r="8" fill="#c8a44a" opacity="0.6" filter="url(#neon)"/>
+  <circle cx="600" cy="90" r="10" fill="#c8a44a" opacity="0.7" filter="url(#neon)"/>
+  <circle cx="750" cy="100" r="8" fill="#c8a44a" opacity="0.6" filter="url(#neon)"/>
+  <!-- Light beams -->
+  <polygon points="450,108 420,280 480,280" fill="#c8a44a" opacity="0.03"/>
+  <polygon points="600,100 560,280 640,280" fill="#c8a44a" opacity="0.04"/>
+  <polygon points="750,108 720,280 780,280" fill="#c8a44a" opacity="0.03"/>
+
+  <!-- Neon sign on back wall -->
+  <text x="600" y="170" text-anchor="middle" font-family="serif" font-size="42" fill="#c8a44a" opacity="0.8" filter="url(#neon)" font-weight="700" font-style="italic">BROKEN SPOKE</text>
+  <text x="600" y="210" text-anchor="middle" font-family="serif" font-size="16" fill="#c8a44a" opacity="0.5" letter-spacing="4">SINCE 1964</text>
+
+  <!-- Left wall — memorabilia frames -->
+  <polygon points="0,80 150,80 150,380 0,500" fill="#161010"/>
+  <!-- Picture frames on left wall -->
+  <rect x="20" y="140" width="55" height="45" rx="2" fill="none" stroke="#3a2e18" stroke-width="2"/>
+  <rect x="28" y="148" width="39" height="29" fill="#2a2015"/>
+  <rect x="85" y="120" width="45" height="55" rx="2" fill="none" stroke="#3a2e18" stroke-width="2"/>
+  <rect x="91" y="126" width="33" height="43" fill="#2a2015"/>
+  <rect x="30" y="210" width="50" height="40" rx="2" fill="none" stroke="#3a2e18" stroke-width="2"/>
+  <rect x="36" y="216" width="38" height="28" fill="#2a2015"/>
+  <rect x="90" y="200" width="40" height="50" rx="2" fill="none" stroke="#3a2e18" stroke-width="2"/>
+  <rect x="96" y="206" width="28" height="38" fill="#2a2015"/>
+  <rect x="40" y="280" width="60" height="45" rx="2" fill="none" stroke="#3a2e18" stroke-width="2"/>
+  <rect x="46" y="286" width="48" height="33" fill="#2a2015"/>
+
+  <!-- Right wall — more memorabilia -->
+  <polygon points="1200,80 1050,80 1050,380 1200,500" fill="#161010"/>
+  <rect x="1070" y="130" width="55" height="50" rx="2" fill="none" stroke="#3a2e18" stroke-width="2"/>
+  <rect x="1076" y="136" width="43" height="38" fill="#2a2015"/>
+  <rect x="1135" y="150" width="40" height="45" rx="2" fill="none" stroke="#3a2e18" stroke-width="2"/>
+  <rect x="1141" y="156" width="28" height="33" fill="#2a2015"/>
+  <rect x="1080" y="210" width="50" height="40" rx="2" fill="none" stroke="#3a2e18" stroke-width="2"/>
+  <rect x="1086" y="216" width="38" height="28" fill="#2a2015"/>
+  <rect x="1100" y="270" width="55" height="50" rx="2" fill="none" stroke="#3a2e18" stroke-width="2"/>
+  <rect x="1106" y="276" width="43" height="38" fill="#2a2015"/>
+
+  <!-- Ceiling -->
+  <rect x="0" y="0" width="1200" height="80" fill="#0a0604"/>
+  <!-- Ceiling beams -->
+  <rect x="0" y="75" width="1200" height="5" fill="#1a1410"/>
+
+  <!-- Dance floor area indicator (subtle) -->
+  <ellipse cx="600" cy="520" rx="280" ry="80" fill="#1e1810" opacity="0.5" stroke="#2a2015" stroke-width="1" stroke-dasharray="8 4"/>
+  <text x="600" y="525" text-anchor="middle" font-family="monospace" font-size="11" fill="#3a2e18" letter-spacing="3">DANCE FLOOR</text>
+
+  <!-- ========== LAPENTOR UI OVERLAY ========== -->
+
+  <!-- Hotspot markers (interactive points) -->
+  <!-- Hotspot 1: Stage info -->
+  <g transform="translate(600,310)" filter="url(#neon)">
+    <circle r="14" fill="#a78bfa" opacity="0.25"/>
+    <circle r="8" fill="#a78bfa" opacity="0.6"/>
+    <circle r="4" fill="white" opacity="0.9"/>
+    <text x="0" y="-22" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#a78bfa" font-weight="600">THE STAGE</text>
+  </g>
+
+  <!-- Hotspot 2: Memorabilia wall -->
+  <g transform="translate(100,220)" filter="url(#neon)">
+    <circle r="12" fill="#a78bfa" opacity="0.25"/>
+    <circle r="7" fill="#a78bfa" opacity="0.6"/>
+    <circle r="3.5" fill="white" opacity="0.9"/>
+    <text x="0" y="-18" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#a78bfa" font-weight="600">MEMORABILIA</text>
+  </g>
+
+  <!-- Hotspot 3: Dance floor -->
+  <g transform="translate(450,480)" filter="url(#neon)">
+    <circle r="12" fill="#a78bfa" opacity="0.25"/>
+    <circle r="7" fill="#a78bfa" opacity="0.6"/>
+    <circle r="3.5" fill="white" opacity="0.9"/>
+    <text x="0" y="-18" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#a78bfa" font-weight="600">DANCE FLOOR</text>
+  </g>
+
+  <!-- Navigation arrow (to next scene) -->
+  <g transform="translate(900,450)">
+    <circle r="20" fill="#a78bfa" opacity="0.15"/>
+    <circle r="14" fill="#a78bfa" opacity="0.3"/>
+    <polygon points="8,-6 8,6 16,0" fill="white" opacity="0.8"/>
+    <text x="0" y="30" text-anchor="middle" font-family="sans-serif" font-size="9" fill="#a78bfa">BAR AREA →</text>
+  </g>
+
+  <!-- Lapentor toolbar (bottom) -->
+  <rect x="0" y="630" width="1200" height="45" fill="#000000" opacity="0.7"/>
+  <rect x="0" y="630" width="1200" height="1" fill="#a78bfa" opacity="0.3"/>
+
+  <!-- Scene name -->
+  <text x="30" y="658" font-family="sans-serif" font-size="13" fill="#e8e0d0" font-weight="500">Dance Floor &amp; Stage</text>
+
+  <!-- Toolbar controls -->
+  <!-- Fullscreen -->
+  <rect x="1130" y="642" width="28" height="22" rx="4" fill="none" stroke="#7a6e5e" stroke-width="1.5"/>
+  <rect x="1136" y="647" width="6" height="5" fill="none" stroke="#7a6e5e" stroke-width="1"/>
+  <rect x="1148" y="647" width="6" height="5" fill="none" stroke="#7a6e5e" stroke-width="1"/>
+  <rect x="1136" y="654" width="6" height="5" fill="none" stroke="#7a6e5e" stroke-width="1"/>
+  <rect x="1148" y="654" width="6" height="5" fill="none" stroke="#7a6e5e" stroke-width="1"/>
+
+  <!-- Gyroscope icon -->
+  <circle cx="1100" cy="653" r="10" fill="none" stroke="#7a6e5e" stroke-width="1.5"/>
+  <circle cx="1100" cy="653" r="3" fill="#7a6e5e"/>
+
+  <!-- Scene list icon -->
+  <g transform="translate(1050,645)">
+    <rect width="18" height="3" rx="1" fill="#7a6e5e"/>
+    <rect y="5" width="18" height="3" rx="1" fill="#7a6e5e"/>
+    <rect y="10" width="18" height="3" rx="1" fill="#7a6e5e"/>
+  </g>
+
+  <!-- Scene indicator dots -->
+  <g transform="translate(560,653)">
+    <circle cx="0" cy="0" r="4" fill="#a78bfa"/>
+    <circle cx="16" cy="0" r="4" fill="#7a6e5e" opacity="0.5"/>
+    <circle cx="32" cy="0" r="4" fill="#7a6e5e" opacity="0.5"/>
+    <circle cx="48" cy="0" r="4" fill="#7a6e5e" opacity="0.5"/>
+    <circle cx="64" cy="0" r="4" fill="#7a6e5e" opacity="0.5"/>
+  </g>
+
+  <!-- Tour title overlay (top-left) -->
+  <rect x="0" y="0" width="400" height="50" fill="#000000" opacity="0.5"/>
+  <text x="20" y="22" font-family="serif" font-size="14" fill="#c8a44a" font-weight="600">Story of Broken Spoke</text>
+  <text x="20" y="40" font-family="monospace" font-size="10" fill="#7a6e5e" letter-spacing="1">PRESERVING AUSTIN CULTURE</text>
+
+  <!-- 360 indicator (top-right) -->
+  <g transform="translate(1140,25)">
+    <circle r="18" fill="none" stroke="#a78bfa" stroke-width="1.5" opacity="0.5"/>
+    <text x="0" y="5" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#a78bfa" font-weight="700">360°</text>
+  </g>
+</svg>
