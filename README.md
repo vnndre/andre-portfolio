@@ -13,18 +13,38 @@ One folder of HTML files where the markup, styling, and behavior for each page l
 ## Structure
 
 ```
-index.html            main portfolio page — hero, about, project grid
-cartlog.html          CartLog receipt scanner case study
-holey-moley.html      Holey Moley (Funlab) review analytics case study
-topper.html           Topper GPT advising chatbot case study
-aventi.html           Aventi travel app — UT McCombs capstone case study
-broken-spoke.html     Broken Spoke 360° virtual tour case study
-charity-swipe.html    Charity Swipe nonprofit discovery case study
-audi.html             Audi brand experience case study
-yelp-analysis.html    Yelp data analysis dashboard case study
-images/               project screenshots, headshot, hero collage photos
-  ig/                 Instagram export photos used in collage hero
-CLAUDE.md             design system + architecture notes
+index.html                main portfolio page — hero, about, project grid
+cartlog.html              CartLog receipt scanner case study
+holey-moley.html          Holey Moley (Funlab) review analytics case study
+topper.html               Topper GPT advising chatbot case study
+aventi.html               Aventi travel app — UT McCombs capstone case study
+broken-spoke.html         Broken Spoke 360° virtual tour case study
+charity-swipe.html        Charity Swipe nonprofit discovery case study
+audi.html                 Audi brand experience case study
+yelp-analysis.html        Yelp data analysis dashboard case study
+
+images/                   project screenshots, headshot, hero collage photos
+  ig/                     Instagram export photos used in collage hero
+
+styles/                   shared CSS (being extracted from inline as of v3)
+  design-system.css       colors, fonts, grain, buttons, shared primitives
+scripts/                  shared JavaScript (being extracted from inline as of v3)
+
+notes/
+  process/                "how I built it" logs for each case study
+    cartlog-28-hour-sprint.md
+    holey-moley-v1-to-v2.md
+    portfolio-redesign-log.md       ← live doc, updated as the site evolves
+  prompts/                actual AI prompts behind the tools
+    holey-moley-report-prompt.md
+    topper-advising-system-prompt.md
+
+assets/
+  case-studies/           printable PDF exports of each case study
+  research/               interview notes, affinity maps, screeners (anonymized)
+  figma/                  public Figma file + prototype share links
+
+CLAUDE.md                 design system + architecture notes
 ```
 
 ## Design system
@@ -51,7 +71,22 @@ CLAUDE.md             design system + architecture notes
   - Written in Andre's actual voice — deadpan, direct, lowercase energy
   - Not corporate-creative. "pondering" not "leveraging synergies"
 
-See `CLAUDE.md` for a deeper breakdown.
+See `CLAUDE.md` for a deeper breakdown, and `notes/process/portfolio-redesign-log.md` for the live evolution log.
+
+## Process notes and prompts
+
+The `notes/` directory holds the thinking behind the work, not just the output. Two kinds of docs live there:
+
+- **`notes/process/`** — "how I built it" logs for each major case study, including the pivots I killed, the constraints I worked against, and the decisions that shaped the final design. Good starting points: `cartlog-28-hour-sprint.md` and `holey-moley-v1-to-v2.md`.
+- **`notes/prompts/`** — the actual system prompts behind the AI tools in my portfolio, with annotations on why each instruction is there. I'm a UX designer building AI-powered tools, and the prompt is a first-class design artifact. Hiding it would be dishonest.
+
+## Assets
+
+`assets/` holds supporting artifacts that don't belong in the live site but matter to the case studies:
+
+- **`assets/case-studies/`** — printable PDF exports, generated with headless Brave for recruiters who want a self-contained case study they can email or archive.
+- **`assets/research/`** — anonymized interview notes, affinity maps, screeners, and research plans.
+- **`assets/figma/`** — public Figma share links for the interactive prototypes behind each case study.
 
 ## Running locally
 
