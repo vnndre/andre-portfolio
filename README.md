@@ -2,13 +2,13 @@
 
 Source for **[andre-espinoza.com](https://andre-espinoza.com)** — Andre Espinoza's personal portfolio.
 
-Hand-coded static HTML, CSS, and vanilla JavaScript. No build step, no framework, no bundler. Deployed to Vercel, domain routed through Namecheap.
+Static HTML pages with inline CSS and JavaScript. No build step, no framework, no bundler, no separate stylesheets or JS files — every page is a single self-contained `.html`. Deployed to Vercel, domain routed through Namecheap.
+
+Built collaboratively with AI — the design direction, copy, and iteration calls are mine; the code was vibecoded alongside Claude. The repo is how I think about my portfolio as a living document: edit a file, refresh the browser, ship.
 
 ## Why it's built this way
 
-Every build tool is a small surrender of control. This portfolio is deliberately the opposite — a single folder of HTML files where the markup, styling, and behavior for each page live together, and the only thing between the code and the browser is Vercel's CDN.
-
-It's also a working design document. The site IS the system — typography, color, motion, and copy voice all live in-file so iterating is a matter of editing one page and refreshing, not wrangling a component tree.
+One folder of HTML files where the markup, styling, and behavior for each page live together. The only thing between the code and the browser is Vercel's CDN. Iteration is as fast as it gets, and every page is independently editable without touching a build pipeline.
 
 ## Structure
 
@@ -62,7 +62,7 @@ python3 -m http.server 8000
 # → open http://localhost:8000
 ```
 
-Any static file server works. No dependencies to install.
+Any static file server works. No dependencies to install — just open the HTML.
 
 ## Deploy
 
