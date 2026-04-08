@@ -28,11 +28,28 @@ Planning a two-phase overhaul:
 - Add `assets/figma/figma-share-links.md` — public Figma URLs for interactive prototypes
 
 **Phase 2 — Visual redesign v3 (next):**
-- Goal: glass + flowing + interactive, without looking like an AI template
-- Research phase: gather 4–6 reference sites that nail the feel
+- Goal: "liquid/wet" like Apple's new OS (Liquid Glass / visionOS), layered translucent panels with specular highlights, flowing interactions, professional craft energy — not an AI template
+- Research phase: reference sites gathered (see below)
 - Teardown phase: decompose the references, identify the techniques worth stealing
 - Rebuild: index.html first, then port case studies
 - Explicit anti-goals: no purple gradients, no generic dark-and-techy, no Inter/Roboto, no "built with v0" energy
+
+### Reference sites (gathered 2026-04-08)
+
+**"Looks amazing" — aspirational taste references:**
+- https://chaachiedesigns.framer.website/
+- https://www.jessicagoldmandesign.com/
+- https://whyramachandran.design/
+- https://uxpilot.ai/
+- https://rachaelgrocott.com/
+
+**"Glass / flowing / interactive" — direct technique references:**
+- https://mattahrens.design/
+- https://israelsundseth.framer.website/
+- https://robin-noguier.com/
+- https://www.jonathanpatterson.com/
+
+**Mood keyword:** "liquid/wet, like Apple's new OS" — translates to Liquid Glass aesthetic: refractive translucency, layered depth, specular light edges, flowing state transitions. Not literal frosted-glass `backdrop-filter: blur()`.
 
 ## Design principles I'm building toward
 
