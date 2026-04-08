@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aventi — Case Study by Andre Espinoza</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0f1e; --bg2: #0f172a; --bg3: #1e293b;
+    --border: #1e293b; --border2: #334155;
+    --accent: #6B3FA0; --accent2: #7C4DBA;
+    --orange: #F5A623; --orange2: #E8951A;
+    --text: #f1f5f9; --text2: #cbd5e1; --text3: #94a3b8;
+    --text4: #64748b; --text5: #475569;
+    --red: #f87171; --green: #4ade80; --yellow: #facc15;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.6; overflow-x: hidden; }
+
+  /* Custom scrollbars */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 100px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text5); }
+  * { scrollbar-width: thin; scrollbar-color: var(--border2) var(--bg); }
+
+  /* Noise */
+  body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E"); opacity:0.025; pointer-events:none; z-index:0; }
+
+  /* Scroll reveals */
+  .reveal { opacity:0; transform:translateY(24px); transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.visible { opacity:1; transform:none; }
+  .reveal-left { opacity:0; transform:translateX(-24px); transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .reveal-left.visible { opacity:1; transform:none; }
+  .reveal-right { opacity:0; transform:translateX(24px); transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .reveal-right.visible { opacity:1; transform:none; }
+  .d1{transition-delay:0.05s!important} .d2{transition-delay:0.1s!important} .d3{transition-delay:0.15s!important}
+  .d4{transition-delay:0.2s!important} .d5{transition-delay:0.25s!important} .d6{transition-delay:0.3s!important}
+
+  /* NAV */
+  nav { position:fixed; top:0; left:0; right:0; z-index:100; padding:16px 32px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(to bottom,#0a0f1eee,transparent); backdrop-filter:blur(12px); transition:background 0.3s, border-bottom 0.3s; }
+  .nav-logo { font-family:'DM Serif Display',serif; font-size:20px; color:var(--text); text-decoration:none; }
+  .nav-logo span { color:var(--accent); }
+  .proto-badge { display:inline-flex; align-items:center; gap:6px; background:#6B3FA011; border:1px solid #6B3FA033; border-radius:100px; padding:5px 14px; font-size:12px; font-weight:600; color:var(--accent); letter-spacing:0.04em; text-decoration:none; transition:background 0.2s; }
+  .proto-badge:hover { background:#6B3FA022; }
+
+  /* HERO */
+  .hero { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:120px 24px 80px; position:relative; overflow:hidden; }
+  .hero-glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-60%); width:700px; height:700px; background:radial-gradient(circle,#6B3FA014 0%,#7C4DBA08 40%,transparent 70%); pointer-events:none; transition:transform 0.1s ease-out; }
+  .hero-grid { position:absolute; inset:0; background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px); background-size:48px 48px; opacity:0.3; mask-image:radial-gradient(ellipse 80% 60% at 50% 50%,black,transparent); }
+  .hero-tag { display:inline-flex; align-items:center; gap:8px; background:#6B3FA012; border:1px solid #6B3FA033; border-radius:100px; padding:6px 16px; font-size:12px; color:var(--accent); font-weight:600; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:24px; animation:fadeDown 0.8s ease both; }
+  .hero-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px var(--accent); animation:pulse 2s ease infinite; }
+  .hero h1 { font-family:'DM Serif Display',serif; font-size:clamp(52px,10vw,96px); line-height:1.0; text-align:center; animation:fadeUp 0.9s 0.1s ease both; max-width:900px; }
+  .hero h1 .accent { color:var(--accent); }
+  .hero-sub { color:var(--text3); font-size:clamp(15px,2.5vw,19px); text-align:center; max-width:620px; margin-top:20px; line-height:1.65; animation:fadeUp 0.9s 0.2s ease both; }
+  .hero-meta { display:flex; gap:32px; margin-top:40px; flex-wrap:wrap; justify-content:center; animation:fadeUp 0.9s 0.3s ease both; }
+  .hero-meta-item { display:flex; flex-direction:column; align-items:center; gap:4px; }
+  .hero-meta-label { color:var(--text5); font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; }
+  .hero-meta-value { color:var(--text2); font-size:14px; font-weight:500; }
+  .hero-cta { display:flex; gap:12px; margin-top:48px; flex-wrap:wrap; justify-content:center; animation:fadeUp 0.9s 0.4s ease both; }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border:none; border-radius:12px; padding:14px 28px; font-size:15px; font-weight:700; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:opacity 0.2s,transform 0.2s; font-family:'DM Sans',sans-serif; }
+  .btn-primary:hover { opacity:0.88; transform:translateY(-2px); }
+  .btn-secondary { background:var(--bg3); color:var(--text3); border:1px solid var(--border2); border-radius:12px; padding:14px 28px; font-size:15px; font-weight:500; cursor:pointer; text-decoration:none; display:inline-flex; align-items:center; gap:8px; transition:all 0.2s; font-family:'DM Sans',sans-serif; }
+  .btn-secondary:hover { background:#273548; color:var(--text2); border-color:var(--text5); }
+  .scroll-hint { position:absolute; bottom:36px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--text5); font-size:11px; animation:fadeUp 1s 0.8s ease both; letter-spacing:0.06em; text-transform:uppercase; }
+  .scroll-line { width:1px; height:36px; background:linear-gradient(to bottom,var(--accent),transparent); animation:scrollLine 2s ease infinite; }
+
+  /* SECTIONS */
+  section { position:relative; z-index:1; }
+  .section-inner { max-width:880px; margin:0 auto; padding:80px 24px; }
+  .section-label { display:flex; align-items:center; gap:10px; color:var(--orange); font-size:11px; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:14px; }
+  .section-label::after { content:''; flex:1; height:1px; background:linear-gradient(to right,var(--orange2),transparent); max-width:100px; }
+  .section-title { font-family:'DM Serif Display',serif; font-size:clamp(30px,5vw,46px); line-height:1.15; color:var(--text); margin-bottom:18px; }
+  .section-body { color:var(--text3); font-size:16px; line-height:1.75; max-width:660px; }
+  .section-body p+p { margin-top:14px; }
+  .section-divider { height:1px; background:linear-gradient(to right,transparent,var(--border2) 20%,var(--border2) 80%,transparent); margin:0 24px; }
+
+  /* SPLIT */
+  .split-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:36px; }
+  @media(max-width:640px){.split-grid{grid-template-columns:1fr}}
+  .split-card { background:var(--bg2); border:1px solid var(--border); border-radius:20px; padding:26px 22px; transition:border-color 0.2s; }
+  .split-card:hover { border-color:var(--border2); }
+  .split-card-label { font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px; }
+  .split-card-title { font-family:'DM Serif Display',serif; font-size:20px; color:var(--text); margin-bottom:10px; line-height:1.25; }
+  .split-card-body { color:var(--text4); font-size:14px; line-height:1.7; }
+
+  /* STATS */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin-top:36px; }
+  .stat-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:22px 18px; position:relative; overflow:hidden; transition:border-color 0.2s,transform 0.2s; }
+  .stat-card:hover { border-color:var(--border2); transform:translateY(-2px); }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(to right,var(--accent),var(--accent2)); opacity:0; transition:opacity 0.2s; }
+  .stat-card:hover::before { opacity:1; }
+  .stat-number { font-family:'DM Serif Display',serif; font-size:34px; color:var(--accent); line-height:1; }
+  .stat-label { color:var(--text4); font-size:13px; margin-top:6px; }
+
+  /* PIPELINE CAROUSEL */
+  .pipeline-outer { position:relative; margin-top:40px; overflow:hidden; }
+  .pipeline-track-wrap { overflow:hidden; cursor:grab; user-select:none; border-radius:16px; }
+  .pipeline-track-wrap:active { cursor:grabbing; }
+  .pipeline-track { display:flex; gap:12px; width:max-content; will-change:transform; }
+  .pipe-step { flex:0 0 140px; background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:20px 16px; text-align:center; transition:border-color 0.3s,transform 0.3s; }
+  .pipe-step.active { border-color:#6B3FA055; background:#6B3FA008; transform:translateY(-3px); }
+  .pipe-step-icon { font-size:28px; margin-bottom:10px; }
+  .pipe-step-label { color:var(--text2); font-size:13px; font-weight:600; }
+  .pipe-step-sub { color:var(--text5); font-size:11px; margin-top:4px; }
+  .pipe-dots { display:flex; justify-content:center; gap:6px; margin-top:16px; }
+  .pipe-dot { width:6px; height:6px; border-radius:50%; background:var(--border2); transition:background 0.3s, transform 0.3s; cursor:pointer; }
+  .pipe-dot.active { background:var(--accent); transform:scale(1.3); }
+
+  /* TIMELINE */
+  .timeline { position:relative; padding-left:26px; margin-top:32px; display:flex; flex-direction:column; gap:28px; }
+  .timeline::before { content:''; position:absolute; left:6px; top:8px; bottom:8px; width:1px; background:linear-gradient(to bottom,var(--accent),var(--border2)); }
+  .timeline-item { position:relative; }
+  .timeline-dot { position:absolute; left:-23px; top:4px; width:12px; height:12px; border-radius:50%; background:var(--accent); box-shadow:0 0 8px #6B3FA066; border:2px solid var(--bg); }
+  .timeline-label { color:var(--orange); font-size:11px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:3px; }
+  .timeline-title { color:var(--text); font-size:15px; font-weight:600; margin-bottom:4px; }
+  .timeline-body { color:var(--text4); font-size:14px; line-height:1.65; }
+
+  /* FEATURES */
+  .feature-list { display:flex; flex-direction:column; gap:16px; margin-top:36px; }
+  .feature-card { background:var(--bg2); border:1px solid var(--border); border-radius:18px; padding:24px; display:grid; grid-template-columns:44px 1fr; gap:18px; align-items:start; transition:all 0.2s; }
+  .feature-card:hover { border-color:#6B3FA033; background:#6B3FA005; }
+  .feature-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; background:#6B3FA011; border:1px solid #6B3FA022; flex-shrink:0; }
+  .feature-title { color:var(--text); font-weight:700; font-size:16px; margin-bottom:6px; }
+  .feature-body { color:var(--text4); font-size:14px; line-height:1.65; }
+  .feature-tag { display:inline-block; background:#6B3FA00d; color:var(--accent); border:1px solid #6B3FA022; border-radius:6px; padding:2px 8px; font-size:11px; font-weight:600; margin-top:8px; letter-spacing:0.04em; }
+
+  /* REFLECTION */
+  .reflection-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:28px; }
+  @media(max-width:700px){.reflection-grid{grid-template-columns:1fr}}
+  .reflection-card { background:var(--bg2); border:1px solid var(--border); border-radius:16px; padding:22px; transition:all 0.2s; }
+  .reflection-card:hover { border-color:var(--border2); transform:translateY(-2px); }
+  .reflection-num { font-family:'DM Serif Display',serif; font-size:26px; color:var(--accent); margin-bottom:10px; }
+  .reflection-title { color:var(--text); font-weight:700; font-size:15px; margin-bottom:6px; }
+  .reflection-body { color:var(--text4); font-size:13px; line-height:1.65; }
+
+  /* QUOTE */
+  .quote-block { border-left:3px solid var(--accent); padding:14px 22px; margin:28px 0; background:#6B3FA008; border-radius:0 12px 12px 0; }
+  .quote-text { color:var(--text2); font-size:16px; font-style:italic; line-height:1.7; }
+  .quote-author { color:var(--text5); font-size:13px; margin-top:6px; }
+
+  /* TEAM */
+  .team-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin-top:28px; }
+  .team-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:18px 20px; transition:all 0.2s; }
+  .team-card:hover { border-color:#6B3FA044; background:#6B3FA008; transform:translateY(-1px); }
+  .team-name { color:var(--text2); font-size:14px; font-weight:600; }
+  .team-role { color:var(--text5); font-size:12px; margin-top:2px; }
+
+  /* VIDEO */
+  .video-wrap { margin-top:32px; border-radius:16px; overflow:hidden; border:1px solid var(--border); background:var(--bg2); }
+  .video-wrap video { width:100%; display:block; }
+
+  /* FIGMA EMBEDS */
+  .figma-embed { margin-top:32px; border-radius:16px; overflow:hidden; border:1px solid var(--border); background:var(--bg2); }
+  .figma-embed iframe { width:100%; height:500px; border:none; display:block; }
+  .figma-embed-label { padding:12px 18px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); }
+  .figma-embed-label span { color:var(--text4); font-size:13px; }
+  .figma-embed-label a { color:var(--accent); font-size:13px; font-weight:600; text-decoration:none; }
+  .figma-embed-label a:hover { text-decoration:underline; }
+  @media(max-width:640px){ .figma-embed iframe { height:350px; } }
+
+  /* CTA */
+  .cta-section { background:linear-gradient(135deg,#6B3FA00a,#7C4DBA08); border-top:1px solid #6B3FA022; padding:80px 24px; text-align:center; position:relative; overflow:hidden; }
+  .cta-glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:500px; height:300px; background:radial-gradient(ellipse,#6B3FA00a,transparent 70%); pointer-events:none; }
+  .cta-title { font-family:'DM Serif Display',serif; font-size:clamp(32px,5vw,52px); margin-bottom:14px; position:relative; }
+  .cta-sub { color:var(--text4); font-size:16px; margin-bottom:32px; max-width:460px; margin-left:auto; margin-right:auto; position:relative; }
+
+  /* FOOTER */
+  footer { background:var(--bg2); border-top:1px solid var(--border); padding:28px 24px; text-align:center; }
+  footer p { color:var(--text5); font-size:13px; }
+  footer a { color:var(--accent); text-decoration:none; }
+  footer a:hover { text-decoration:underline; }
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+  @keyframes scrollLine{0%{transform:scaleY(0);transform-origin:top;opacity:1}50%{transform:scaleY(1);transform-origin:top;opacity:1}100%{transform:scaleY(1);transform-origin:bottom;opacity:0}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">av<span>enti</span></a>
+  <a href="https://www.figma.com/design/mOOtcwR7lVF8L3K6Vu66eD/Milestone-3---Prototyping" target="_blank" class="proto-badge">View Prototype</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-tag"><span class="hero-dot"></span>UX Design Capstone</div>
+  <h1>Discover what's next,<br/><em class="accent">together</em></h1>
+  <p class="hero-sub">Aventi is a mobile app that helps people discover, plan, and share leisure activities through personalized recommendations, social coordination, and smart calendar sync &mdash; designed as a team capstone for the UT Austin Postgraduate UX Design program.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><span class="hero-meta-label">Role</span><span class="hero-meta-value">Designer & Creative</span></div>
+    <div class="hero-meta-item"><span class="hero-meta-label">Team</span><span class="hero-meta-value">5 Members</span></div>
+    <div class="hero-meta-item"><span class="hero-meta-label">Program</span><span class="hero-meta-value">UT Austin x McCombs</span></div>
+    <div class="hero-meta-item"><span class="hero-meta-label">Duration</span><span class="hero-meta-value">3 Milestones</span></div>
+  </div>
+  <div class="hero-cta">
+    <a href="https://www.figma.com/design/mOOtcwR7lVF8L3K6Vu66eD/Milestone-3---Prototyping" target="_blank" class="btn-primary">View Figma Prototype</a>
+    <a href="#problem" class="btn-secondary">Read Case Study</a>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div>scroll</div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 01 PROBLEM -->
+<section id="problem">
+  <div class="section-inner">
+    <div class="section-label reveal">01 &mdash; Problem</div>
+    <h2 class="section-title reveal">How might we help people find what to do next?</h2>
+    <div class="section-body reveal">
+      <p>How might we help individuals discover and book new leisure activities that align with their interests, schedules, and locations?</p>
+      <p>People juggle fragmented platforms for discovery, coordination, and planning. There is no single place that combines personalized recommendations with the social tools needed to actually make plans happen.</p>
+    </div>
+    <div class="split-grid">
+      <div class="split-card reveal-left d1">
+        <div class="split-card-label" style="color:var(--red)">The Gap</div>
+        <div class="split-card-title">Fragmented discovery across multiple platforms</div>
+        <div class="split-card-body">Users bounce between Google, Yelp, Instagram, and group chats trying to find, vet, and coordinate activities. No single tool connects discovery to planning to scheduling.</div>
+      </div>
+      <div class="split-card reveal-right d2">
+        <div class="split-card-label" style="color:var(--green)">The Fix</div>
+        <div class="split-card-title">One app with personalized recs, social sharing, and calendar sync</div>
+        <div class="split-card-body">Aventi combines an archetype-based recommendation engine, social coordination tools, and calendar integration into a single streamlined experience.</div>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card reveal d1"><div class="stat-number">42</div><div class="stat-label">Survey participants</div></div>
+      <div class="stat-card reveal d2"><div class="stat-number">5</div><div class="stat-label">User flows designed</div></div>
+      <div class="stat-card reveal d3"><div class="stat-number">7</div><div class="stat-label">Traveler archetypes</div></div>
+      <div class="stat-card reveal d4"><div class="stat-number">5</div><div class="stat-label">MVP features shipped</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 02 RESEARCH -->
+<section id="research">
+  <div class="section-inner">
+    <div class="section-label reveal">02 &mdash; Research</div>
+    <h2 class="section-title reveal">42 voices shaped every decision</h2>
+    <div class="section-body reveal">
+      <p>We surveyed 42 participants via Google Forms using 9 structured and 3 open-ended questions. The data revealed clear patterns in activity preferences, decision-making factors, and unmet needs around inclusivity and social coordination.</p>
+    </div>
+
+    <div class="feature-list">
+      <div class="feature-card reveal d1">
+        <div class="feature-icon">1</div>
+        <div>
+          <div class="feature-title">Entertainment & outdoor activities most preferred</div>
+          <div class="feature-body">42% of respondents across all age groups ranked entertainment and outdoor activities as their top leisure categories, establishing our primary content focus.</div>
+          <div class="feature-tag">Activity Preferences</div>
+        </div>
+      </div>
+      <div class="feature-card reveal d2">
+        <div class="feature-icon">2</div>
+        <div>
+          <div class="feature-title">Cost & location are the #1 decision factors</div>
+          <div class="feature-body">Two-thirds of respondents aged 25-34 cited cost and location as their primary decision criteria when choosing activities, driving our filter and sort architecture.</div>
+          <div class="feature-tag">Decision Factors</div>
+        </div>
+      </div>
+      <div class="feature-card reveal d3">
+        <div class="feature-icon">3</div>
+        <div>
+          <div class="feature-title">71% prefer short-term planning</div>
+          <div class="feature-body">The majority plan activities days to a week in advance, not months. This shaped our calendar sync and quick-plan features to prioritize near-term discovery.</div>
+          <div class="feature-tag">Planning Behavior</div>
+        </div>
+      </div>
+      <div class="feature-card reveal d4">
+        <div class="feature-icon">4</div>
+        <div>
+          <div class="feature-title">Information & inclusivity are top challenges</div>
+          <div class="feature-body">Users reported difficulty finding complete activity details and accessible options. This directly led to our ADA accessibility filters as a core MVP feature.</div>
+          <div class="feature-tag">Pain Points</div>
+        </div>
+      </div>
+      <div class="feature-card reveal d5">
+        <div class="feature-icon">5</div>
+        <div>
+          <div class="feature-title">Personalization & social tools are top priorities</div>
+          <div class="feature-body">When asked what would improve their experience, respondents consistently requested personalized recommendations and better tools for coordinating with friends.</div>
+          <div class="feature-tag">User Priorities</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-block reveal" style="margin-top:36px;">
+      <div class="quote-text">"I would like to be able to find more things accessible to me as someone with chronic pain."</div>
+      <div class="quote-author">&mdash; Survey Participant</div>
+    </div>
+    <div class="quote-block reveal">
+      <div class="quote-text">"I wish that I could make requests with friends about availability without it becoming a stressful exercise."</div>
+      <div class="quote-author">&mdash; Survey Participant</div>
+    </div>
+    <div class="quote-block reveal">
+      <div class="quote-text">"Personalized recommendations would be my way of improving my experience."</div>
+      <div class="quote-author">&mdash; Survey Participant</div>
+    </div>
+
+    <div class="figma-embed reveal" style="margin-top:40px;">
+      <iframe src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fboard%2FSWOfMm0UOVRL7CmtvjujeM%2FUXD-Capstone-Milestone-2%3Fnode-id%3D0-1" allowfullscreen></iframe>
+      <div class="figma-embed-label">
+        <span>Milestone 2 &mdash; Full Research Board</span>
+        <a href="https://www.figma.com/board/SWOfMm0UOVRL7CmtvjujeM/UXD-Capstone-Milestone-2" target="_blank">Open in Figma</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 03 INFORMATION ARCHITECTURE -->
+<section id="ia">
+  <div class="section-inner">
+    <div class="section-label reveal">03 &mdash; Information Architecture</div>
+    <h2 class="section-title reveal">Structured around how people actually plan</h2>
+    <div class="section-body reveal">
+      <p>Aventi's primary navigation consists of four core tabs &mdash; Calendar, Home, Explore, and Profile &mdash; plus a Floating Action Button for quick actions. The architecture prioritizes personalization, social connection, and seamless planning.</p>
+      <p>We conducted a competitive analysis by tearing down TripAdvisor's site map to understand existing patterns and identify gaps we could fill. Our IA was designed to reduce the number of taps between discovery and commitment.</p>
+    </div>
+
+    <!-- Pipeline carousel for IA process -->
+    <div class="pipeline-outer reveal">
+      <div class="pipeline-track-wrap" id="trackWrap">
+        <div class="pipeline-track" id="pipelineTrack">
+        </div>
+      </div>
+      <div class="pipe-dots" id="pipeDots"></div>
+    </div>
+
+    <div class="figma-embed reveal" style="margin-top:40px;">
+      <iframe src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fboard%2FB2kDOXK3ldQ6OcAtKqrQ4G%2Ftravel-app-maps-final%3Fnode-id%3D0-1" allowfullscreen></iframe>
+      <div class="figma-embed-label">
+        <span>Site Map & Information Architecture</span>
+        <a href="https://www.figma.com/board/B2kDOXK3ldQ6OcAtKqrQ4G/travel-app-maps-final" target="_blank">Open in Figma</a>
+      </div>
+    </div>
+
+    <div class="figma-embed reveal" style="margin-top:16px;">
+      <iframe src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fboard%2FixLv4mz24ZQsrc6lq5xK5L%2FEmpathy-Map-Template--Copy-%3Fnode-id%3D0-1" allowfullscreen></iframe>
+      <div class="figma-embed-label">
+        <span>User Personas & Empathy Maps</span>
+        <a href="https://www.figma.com/board/ixLv4mz24ZQsrc6lq5xK5L/Empathy-Map-Template--Copy-" target="_blank">Open in Figma</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 04 USER FLOWS -->
+<section id="flows">
+  <div class="section-inner">
+    <div class="section-label reveal">04 &mdash; User Flows</div>
+    <h2 class="section-title reveal">5 designers, 5 flows, every angle covered</h2>
+    <div class="section-body reveal">
+      <p>Each team member owned a complete user flow from start to finish, ensuring every critical path through the app was designed with dedicated focus and unique perspective.</p>
+    </div>
+
+    <div class="timeline" style="margin-top:36px;">
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Flow 1 &mdash; Ingrid B</div>
+        <div class="timeline-title">Onboarding & Archetype Quiz</div>
+        <div class="timeline-body">The entry point into Aventi. Users complete a personality-driven quiz that maps them to one of 7 traveler archetypes, seeding the recommendation engine from the first interaction.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Flow 2 &mdash; Andre Espinoza</div>
+        <div class="timeline-title">Event Search & Discovery</div>
+        <div class="timeline-body">The core discovery flow. Users search, filter by category/cost/accessibility, view event details, and save or share activities &mdash; all within a unified browse experience.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Flow 3 &mdash; Sruthi G</div>
+        <div class="timeline-title">Groups & Trips</div>
+        <div class="timeline-body">Social coordination flow. Users create groups, invite friends, propose activities, vote on options, and finalize plans &mdash; turning discovery into commitment.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Flow 4 &mdash; Giselle Chun</div>
+        <div class="timeline-title">Vision Boards</div>
+        <div class="timeline-body">Aspirational planning flow. Users curate collections of activities with travel dates, filters, and conditions &mdash; a Pinterest-style board for future experiences.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">Flow 5 &mdash; Charles Bryant</div>
+        <div class="timeline-title">Calendar Sync</div>
+        <div class="timeline-body">Scheduling integration flow. Syncs planned activities across iCloud, Google Calendar, and Outlook, ensuring plans actually land on the user's real calendar.</div>
+      </div>
+    </div>
+
+    <div class="figma-embed reveal" style="margin-top:40px;">
+      <iframe src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fboard%2FnIJIdfhYMfSaT3bwTjvNJO%2FUXD-Capstone-Milestone-2-IA---User-Flow%3Fnode-id%3D0-1" allowfullscreen></iframe>
+      <div class="figma-embed-label">
+        <span>All 5 User Flows</span>
+        <a href="https://www.figma.com/board/nIJIdfhYMfSaT3bwTjvNJO/UXD-Capstone-Milestone-2-IA---User-Flow" target="_blank">Open in Figma</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 05 DESIGN & PROTOTYPE -->
+<section id="design">
+  <div class="section-inner">
+    <div class="section-label reveal">05 &mdash; Design & Prototype</div>
+    <h2 class="section-title reveal">From lo-fi sketches to interactive prototype</h2>
+    <div class="section-body reveal">
+      <p>The design progressed through three stages: lo-fi grayscale wireframes to validate layout and flow, mid-fi structured wireframes to define component hierarchy, and hi-fi prototypes with the full visual system applied.</p>
+      <p>Our design system centers on Purple (#2D1B69) and Orange (#F5A623) with illustrated character assets, clean sans-serif typography, and generous whitespace. The palette conveys adventure and warmth without skewing generic.</p>
+    </div>
+
+    <div class="feature-list" style="margin-top:32px;">
+      <div class="feature-card reveal d1">
+        <div class="feature-icon" style="background:#F5A62311;border-color:#F5A62322;color:var(--orange);font-family:'DM Serif Display',serif;font-size:16px;">7</div>
+        <div>
+          <div class="feature-title">Archetype Categories</div>
+          <div class="feature-body">Adventurer, Social Explorer, Culture Seeker, Relaxation Enthusiast, Foodie, Planner, and Spontaneous Free Spirit. Each archetype maps to a unique set of activity recommendations and visual identity within the app.</div>
+          <div class="feature-tag">Personalization Engine</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split-grid" style="margin-top:28px;">
+      <div class="split-card reveal-left d1">
+        <div class="split-card-label" style="color:var(--accent)">Key Screens</div>
+        <div class="split-card-title">Onboarding & Quiz</div>
+        <div class="split-card-body">Onboarding carousel introduces the app's value prop. The archetype quiz uses illustrated cards across 7 categories to build the user's preference profile before they see any content.</div>
+      </div>
+      <div class="split-card reveal-right d2">
+        <div class="split-card-label" style="color:var(--orange)">Key Screens</div>
+        <div class="split-card-title">Home Feed & Explore</div>
+        <div class="split-card-body">Personalized home feed surfaces recommendations based on archetype and location. Explore provides category browsing, search, and filter-driven discovery with event detail pages.</div>
+      </div>
+    </div>
+    <div class="split-grid" style="margin-top:14px;">
+      <div class="split-card reveal-left d3">
+        <div class="split-card-label" style="color:var(--accent)">Key Screens</div>
+        <div class="split-card-title">Groups & Sharing</div>
+        <div class="split-card-body">Group creation, activity proposals, and voting flows. Sharing is available at every touchpoint via DM, feed posts, group messages, and external social platforms.</div>
+      </div>
+      <div class="split-card reveal-right d4">
+        <div class="split-card-label" style="color:var(--orange)">Key Screens</div>
+        <div class="split-card-title">Results & Calendar</div>
+        <div class="split-card-body">Archetype results page reveals the user's type with personalized descriptions. Calendar view shows synced plans across all connected calendars with conflict detection.</div>
+      </div>
+    </div>
+
+    <div class="figma-embed reveal" style="margin-top:40px;">
+      <iframe src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FHrepWPscJcIiscloyCj9Pd%2FWireframe-Options%3Fnode-id%3D0-1" allowfullscreen></iframe>
+      <div class="figma-embed-label">
+        <span>Wireframes &mdash; Lo-Fi to Mid-Fi Iterations</span>
+        <a href="https://www.figma.com/design/HrepWPscJcIiscloyCj9Pd/Wireframe-Options" target="_blank">Open in Figma</a>
+      </div>
+    </div>
+
+    <div class="figma-embed reveal" style="margin-top:16px;">
+      <iframe src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FmOOtcwR7lVF8L3K6Vu66eD%2FMilestone-3---Prototyping%3Fnode-id%3D0-1" allowfullscreen></iframe>
+      <div class="figma-embed-label">
+        <span>Hi-Fi Prototype &mdash; Full Interactive Screens</span>
+        <a href="https://www.figma.com/design/mOOtcwR7lVF8L3K6Vu66eD/Milestone-3---Prototyping" target="_blank">Open in Figma</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 06 MVP FEATURES -->
+<section id="features">
+  <div class="section-inner">
+    <div class="section-label reveal">06 &mdash; MVP Features</div>
+    <h2 class="section-title reveal">Five features that define the experience</h2>
+    <div class="feature-list">
+      <div class="feature-card reveal d1">
+        <div class="feature-icon">1</div>
+        <div>
+          <div class="feature-title">Personalized Recommendations</div>
+          <div class="feature-body">An archetype quiz maps users to one of 7 personality types, combined with preference filters for cost, distance, and activity type. The recommendation engine learns from usage patterns over time.</div>
+          <div class="feature-tag">Archetype Quiz + Preference Filters</div>
+        </div>
+      </div>
+      <div class="feature-card reveal d2">
+        <div class="feature-icon">2</div>
+        <div>
+          <div class="feature-title">Accessibility & Inclusivity</div>
+          <div class="feature-body">ADA-focused filters let users surface activities matching their specific needs: sensory accommodations, mobility access, dietary options, and event-specific accessibility details. Born directly from user research quotes about chronic pain.</div>
+          <div class="feature-tag">Sensory + Mobility + Dietary + Event-Specific</div>
+        </div>
+      </div>
+      <div class="feature-card reveal d3">
+        <div class="feature-icon">3</div>
+        <div>
+          <div class="feature-title">Social Sharing & Coordination</div>
+          <div class="feature-body">Sharing is embedded at every touchpoint: DM friends, post to your feed, share in groups, or push to external social platforms. Coordination tools include group proposals, availability polling, and voting.</div>
+          <div class="feature-tag">DM + Feed + Groups + Socials</div>
+        </div>
+      </div>
+      <div class="feature-card reveal d4">
+        <div class="feature-icon">4</div>
+        <div>
+          <div class="feature-title">Flexible Planning</div>
+          <div class="feature-body">Vision boards let users curate future experiences with travel dates, location filters, and conditional triggers. A Pinterest-style approach to trip planning that keeps ideas organized until commitment.</div>
+          <div class="feature-tag">Vision Boards + Filters + Conditions</div>
+        </div>
+      </div>
+      <div class="feature-card reveal d5">
+        <div class="feature-icon">5</div>
+        <div>
+          <div class="feature-title">Calendar Sync</div>
+          <div class="feature-body">Plans sync across iCloud, Google Calendar, and Outlook. Conflict detection warns users when activities overlap with existing commitments, and shared calendar views keep groups aligned.</div>
+          <div class="feature-tag">iCloud + Google + Outlook</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 07 PRESENTATION VIDEO -->
+<section id="video">
+  <div class="section-inner">
+    <div class="section-label reveal">07 &mdash; Presentation</div>
+    <h2 class="section-title reveal">Final milestone walkthrough</h2>
+    <div class="section-body reveal">
+      <p>Our final milestone presentation covers the full journey from research through prototype, demonstrating the design decisions, user flows, and interactive features that define Aventi.</p>
+    </div>
+    <div class="video-wrap reveal">
+      <video controls preload="metadata">
+        <source src="aventi-presentation.mp4" type="video/mp4"/>
+        Your browser does not support the video element.
+      </video>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 08 REFLECTION -->
+<section id="reflection">
+  <div class="section-inner">
+    <div class="section-label reveal">08 &mdash; Reflection</div>
+    <h2 class="section-title reveal">What we learned building Aventi</h2>
+    <div class="section-body reveal"><p>Three milestones, five designers, and forty-two survey participants later &mdash; the strongest insights came from the process itself.</p></div>
+
+    <div class="reflection-grid">
+      <div class="reflection-card reveal d1">
+        <div class="reflection-num">01</div>
+        <div class="reflection-title">Research grounds everything</div>
+        <div class="reflection-body">Survey insights directly shaped our MVP priorities. The archetype system, accessibility filters, and social tools all trace back to specific data points from the 42-participant study.</div>
+      </div>
+      <div class="reflection-card reveal d2">
+        <div class="reflection-num">02</div>
+        <div class="reflection-title">Collaboration multiplies perspective</div>
+        <div class="reflection-body">5 designers meant 5 user flows, each covering different UX concerns. No single designer would have caught the breadth of use cases our team collectively addressed.</div>
+      </div>
+      <div class="reflection-card reveal d3">
+        <div class="reflection-num">03</div>
+        <div class="reflection-title">Inclusivity is a feature, not an afterthought</div>
+        <div class="reflection-body">ADA accessibility filters emerged from real user quotes about chronic pain. Designing for edge cases made the product better for everyone, not just the users who asked for it.</div>
+      </div>
+    </div>
+
+    <div class="quote-block reveal" style="margin-top:32px;">
+      <div class="quote-text">"The strongest design decisions came from listening to what users actually struggle with &mdash; not what we assumed they wanted."</div>
+      <div class="quote-author">&mdash; Team Aventi</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- 09 TEAM -->
+<section id="team">
+  <div class="section-inner">
+    <div class="section-label reveal">09 &mdash; Team</div>
+    <h2 class="section-title reveal">The people behind Aventi</h2>
+    <div class="team-grid">
+      <div class="team-card reveal d1"><div class="team-name">Andre Espinoza</div><div class="team-role">Designer & Creative</div></div>
+      <div class="team-card reveal d2"><div class="team-name">Giselle Chun</div><div class="team-role">Collaborator, Communicator, Visionary</div></div>
+      <div class="team-card reveal d3"><div class="team-name">Charles Bryant</div><div class="team-role">Communicator, Designer, Artist</div></div>
+      <div class="team-card reveal d4"><div class="team-name">Sruthi G</div><div class="team-role">Team Member</div></div>
+      <div class="team-card reveal d5"><div class="team-name">Ingrid B</div><div class="team-role">Creative, Entrepreneur, Designer</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="hero-tag reveal" style="margin:0 auto 20px;"><span class="hero-dot"></span>Explore the Work</div>
+  <h2 class="cta-title reveal">Explore the Prototype</h2>
+  <p class="cta-sub reveal">See the full interactive prototype in Figma &mdash; onboarding, archetype quiz, discovery, groups, and calendar sync.</p>
+  <div class="hero-cta reveal">
+    <a href="https://www.figma.com/design/mOOtcwR7lVF8L3K6Vu66eD/Milestone-3---Prototyping" target="_blank" class="btn-primary">View Figma Prototype</a>
+    <a href="mailto:andre@andre-espinoza.com" class="btn-secondary">Get in Touch</a>
+  </div>
+</div>
+
+<footer>
+  <p>Designed by <a href="https://andre-espinoza.com">Andre Espinoza</a> &nbsp;&middot;&nbsp; UT Austin UXD Capstone &nbsp;&middot;&nbsp; Team Aventi</p>
+</footer>
+
+<script>
+// ── PIPELINE CAROUSEL ──────────────────────────────────────────
+const steps = [
+  { icon:'\u{1F50D}', label:'Research', sub:'42 participants' },
+  { icon:'\u{1F9D1}', label:'Personas', sub:'7 archetypes' },
+  { icon:'\u{1F5C2}', label:'IA', sub:'Nav structure' },
+  { icon:'\u{1F504}', label:'User Flows', sub:'5 core paths' },
+  { icon:'\u{1F4DD}', label:'Wireframes', sub:'Lo-fi to hi-fi' },
+  { icon:'\u{1F3A8}', label:'Prototype', sub:'Figma interactive' },
+  { icon:'\u{2705}', label:'Testing', sub:'Validation' },
+];
+
+const track = document.getElementById('pipelineTrack');
+const dotsEl = document.getElementById('pipeDots');
+const wrap = document.getElementById('trackWrap');
+
+// Render steps (triple for seamless infinite loop)
+[...steps, ...steps, ...steps].forEach((s, i) => {
+  const el = document.createElement('div');
+  el.className = 'pipe-step';
+  el.innerHTML = `<div class="pipe-step-icon">${s.icon}</div><div class="pipe-step-label">${s.label}</div><div class="pipe-step-sub">${s.sub}</div>`;
+  track.appendChild(el);
+});
+
+// Dots (one per original step)
+steps.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'pipe-dot' + (i === 0 ? ' active' : '');
+  d.onclick = () => goTo(i);
+  dotsEl.appendChild(d);
+});
+
+const STEP_W = 140 + 12; // card width + gap
+const TOTAL = steps.length;
+let currentStep = 0;
+let autoInterval;
+let isDragging = false;
+let dragStartX = 0;
+let dragStartOffset = 0;
+let currentOffset = 0;
+
+// Start in middle copy
+let offset = TOTAL * STEP_W;
+
+function setOffset(val, animate) {
+  currentOffset = val;
+  track.style.transition = animate ? 'transform 0.5s cubic-bezier(0.4,0,0.2,1)' : 'none';
+  track.style.transform = `translateX(${-val}px)`;
+}
+
+function updateDots(idx) {
+  document.querySelectorAll('.pipe-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === idx % TOTAL);
+  });
+  document.querySelectorAll('.pipe-step').forEach((el, i) => {
+    el.classList.toggle('active', i % TOTAL === idx % TOTAL);
+  });
+}
+
+function goTo(idx) {
+  currentStep = ((idx % TOTAL) + TOTAL) % TOTAL;
+  offset = (TOTAL + currentStep) * STEP_W;
+  setOffset(offset, true);
+  updateDots(currentStep);
+}
+
+function next() {
+  currentStep = (currentStep + 1) % TOTAL;
+  offset += STEP_W;
+  setOffset(offset, true);
+  // Seamless loop reset
+  if (offset >= TOTAL * 2 * STEP_W) {
+    setTimeout(() => { offset = TOTAL * STEP_W + currentStep * STEP_W; setOffset(offset, false); }, 520);
+  }
+  updateDots(currentStep);
+}
+
+// Init
+setOffset(TOTAL * STEP_W, false);
+updateDots(0);
+
+// Auto-advance every 2.2s
+function startAuto() { autoInterval = setInterval(next, 2200); }
+function stopAuto() { clearInterval(autoInterval); }
+startAuto();
+
+// Pause on hover (desktop)
+wrap.addEventListener('mouseenter', stopAuto);
+wrap.addEventListener('mouseleave', startAuto);
+
+// Mouse drag (desktop scroll)
+wrap.addEventListener('mousedown', e => {
+  isDragging = true;
+  dragStartX = e.clientX;
+  dragStartOffset = offset;
+  stopAuto();
+  e.preventDefault();
+});
+document.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const dx = dragStartX - e.clientX;
+  setOffset(dragStartOffset + dx, false);
+});
+document.addEventListener('mouseup', e => {
+  if (!isDragging) return;
+  isDragging = false;
+  const dx = dragStartX - e.clientX;
+  if (Math.abs(dx) > 40) {
+    currentStep = dx > 0 ? (currentStep + 1) % TOTAL : (currentStep - 1 + TOTAL) % TOTAL;
+  }
+  goTo(currentStep);
+  setTimeout(startAuto, 3000);
+});
+
+// Touch (mobile swipe)
+let touchStartX = 0;
+wrap.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; stopAuto(); }, {passive:true});
+wrap.addEventListener('touchend', e => {
+  const dx = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 40) {
+    currentStep = dx > 0 ? (currentStep + 1) % TOTAL : (currentStep - 1 + TOTAL) % TOTAL;
+    goTo(currentStep);
+  }
+  setTimeout(startAuto, 3000);
+}, {passive:true});
+
+// Mouse wheel (desktop scroll through steps)
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  stopAuto();
+  currentStep = e.deltaY > 0 ? (currentStep + 1) % TOTAL : (currentStep - 1 + TOTAL) % TOTAL;
+  goTo(currentStep);
+  setTimeout(startAuto, 3000);
+}, { passive: false });
+
+// ── SCROLL REVEALS ─────────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
+// ── PARALLAX HERO GLOW ─────────────────────────────────────────
+document.addEventListener('mousemove', e => {
+  const glow = document.querySelector('.hero-glow');
+  if (!glow) return;
+  const x = (e.clientX / window.innerWidth - 0.5) * 30;
+  const y = (e.clientY / window.innerHeight - 0.5) * 30;
+  glow.style.transform = `translate(calc(-50% + ${x}px), calc(-60% + ${y}px))`;
+});
+
+// ── NAV SCROLL ─────────────────────────────────────────────────
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  nav.style.background = window.scrollY > 60 ? '#0a0f1ef2' : 'linear-gradient(to bottom, #0a0f1eee, transparent)';
+  nav.style.borderBottom = window.scrollY > 60 ? '1px solid #1e293b' : 'none';
+});
+</script>
+</body>
+</html>
