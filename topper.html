@@ -1,429 +1,538 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Topper AI — Case Study by Andre Espinoza</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Topper AI — Case Study / Andre Espinoza</title>
+<meta name="description" content="GPT-powered course advising chatbot for St. Edward's University. Turned 30-minute advisor waits into 5-minute conversations.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>■</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
 <style>
-/* ═══════════ TOKENS ═══════════ */
-:root{
-  --bg:#1a1410;
-  --bg2:#211b15;
-  --surface:#2a2520;
-  --line:rgba(255,255,255,.06);
-  --line2:rgba(255,255,255,.1);
-  --cream:#ede6d8;
-  --text:#c8bfae;
-  --dim:#6b6256;
-  --faint:#3a352e;
-  --acid:#d4a853;
-  --violet:#a78bfa;
-  --fd:'Syne',sans-serif;
-  --fb:'Crimson Pro',serif;
-  --fm:'JetBrains Mono',monospace;
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --paper: #f5f2ed;
+  --yellow: #ffe600;
+  --cyan: #00e5ff;
+  --coral: #ff4f58;
+  --lime: #b8ff00;
+  --red: #ff2800;
+  --mid: #666666;
+  --light: #dddddd;
+  --border: 2px solid #000000;
+  --border-heavy: 4px solid #000000;
+  --mono: 'IBM Plex Mono', 'Courier New', Courier, monospace;
+  --project-accent: #a78bfa;
 }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--paper);
+  color: var(--black);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+hr { border: none; border-top: var(--border); margin: 0; }
 
-/* ═══════════ RESET ═══════════ */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:1.05rem;line-height:1.7;overflow-x:hidden}
-a{color:inherit;text-decoration:none}
-
-/* ═══════════ CURSOR ═══════════ */
-@media(hover:hover)and(pointer:fine){
-  *{cursor:none!important}
-  #cur{
-    position:fixed;z-index:9999;pointer-events:none;
-    width:16px;height:16px;
-    border:1.5px solid var(--cream);
-    border-radius:50%;
-    transform:translate(-50%,-50%);
-    transition:width .3s cubic-bezier(.22,1,.36,1),height .3s cubic-bezier(.22,1,.36,1),
-               background .3s,border-color .3s,opacity .25s;
-    mix-blend-mode:difference;
-    will-change:transform,width,height;
+@media(prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
   }
-  #cur.hover{
-    width:56px;height:56px;
-    background:var(--acid);border-color:var(--acid);
-    mix-blend-mode:normal;opacity:.8;
-  }
-  #cur.click{width:40px;height:40px;background:var(--violet);border-color:var(--violet)}
-  #cur-dot{
-    position:fixed;z-index:10000;pointer-events:none;
-    width:5px;height:5px;background:var(--cream);
-    border-radius:50%;transform:translate(-50%,-50%);
-    transition:opacity .2s,transform .15s;will-change:transform;
-  }
-  #cur.hover~#cur-dot{opacity:0;transform:translate(-50%,-50%) scale(0)}
-}
-@media(hover:none),(pointer:coarse){#cur,#cur-dot{display:none!important}}
-
-/* ═══════════ SCROLL PROGRESS ═══════════ */
-#progress{position:fixed;top:0;left:0;height:2px;z-index:9000;background:linear-gradient(90deg,var(--violet),var(--acid));width:0;will-change:width}
-
-/* ═══════════ GRAIN ═══════════ */
-#grain{
-  position:fixed;inset:0;z-index:8000;pointer-events:none;opacity:.14;mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* ═══════════ WARM VIGNETTE ═══════════ */
-body::after{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 10%,rgba(196,149,106,.06),transparent),
-    radial-gradient(ellipse 60% 50% at 80% 90%,rgba(139,69,19,.04),transparent),
-    linear-gradient(180deg,rgba(255,250,240,.015) 0%,transparent 30%,rgba(0,0,0,.1) 100%);
+/* NAV */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--black);
+  color: var(--white);
+  border-bottom: var(--border-heavy);
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+}
+.nav-back {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  padding: 1rem 1.5rem;
+  border-right: 2px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; gap: 0.5rem;
+  transition: background 0.1s, color 0.1s;
+}
+.nav-back:hover { background: var(--yellow); color: var(--black); }
+.nav-title {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  padding: 1rem 1.5rem;
+  display: flex; align-items: center;
+  flex: 1;
+}
+.nav-proto {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0 1.5rem;
+  background: var(--project-accent);
+  color: var(--black);
+  display: flex; align-items: center;
+  border-left: var(--border-heavy);
+  transition: background 0.1s;
+}
+.nav-proto:hover { background: var(--white); }
+
+/* DOCUMENT HEADER */
+.doc-header {
+  background: var(--black);
+  color: var(--white);
+  padding: 4rem 2rem 3rem;
+  border-bottom: var(--border-heavy);
+  position: relative;
+  overflow: hidden;
+}
+.doc-header::before {
+  content: 'PROJECT 05';
+  position: absolute;
+  top: 1.5rem; right: 2rem;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.15);
+  font-weight: 700;
+}
+.doc-meta-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  width: fit-content;
+}
+.doc-meta-item {
+  padding: 0.4rem 1rem;
+  border-right: 1px solid rgba(255,255,255,0.15);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+.doc-meta-item:last-child { border-right: none; }
+.doc-meta-item strong { color: var(--project-accent); font-weight: 600; }
+.doc-h1 {
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 700;
+  line-height: 0.9;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  margin-bottom: 2rem;
+}
+.doc-h1 em { font-style: normal; color: var(--project-accent); }
+.doc-subtitle {
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.55);
+  max-width: 600px;
+  margin-bottom: 2.5rem;
+}
+.doc-cta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.doc-btn {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.75rem 1.75rem;
+  border: 2px solid var(--project-accent);
+  background: var(--project-accent);
+  color: var(--black);
+  display: inline-block;
+  transition: background 0.1s, color 0.1s;
+}
+.doc-btn:hover { background: var(--black); color: var(--project-accent); }
+.doc-btn.ghost {
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  border-color: rgba(255,255,255,0.3);
+}
+.doc-btn.ghost:hover { background: var(--white); color: var(--black); border-color: var(--white); }
+.doc-stats-row {
+  display: flex;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 3rem;
+}
+.doc-stat {
+  flex: 1;
+  padding: 1.5rem;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.doc-stat:last-child { border-right: none; }
+.doc-stat-num {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--project-accent);
+  margin-bottom: 4px;
+}
+.doc-stat-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+@media(max-width:600px){
+  .doc-stats-row{flex-direction:column}
+  .doc-stat{border-right:none;border-bottom:1px solid rgba(255,255,255,0.1)}
+  .doc-stat:last-child{border-bottom:none}
+  .doc-meta-bar{flex-wrap:wrap}
 }
 
-/* ═══════════ GLOW ═══════════ */
-#glow{
-  position:fixed;width:600px;height:600px;border-radius:50%;pointer-events:none;z-index:0;
-  background:radial-gradient(circle,rgba(167,139,250,.04) 0%,transparent 70%);
-  transform:translate(-50%,-50%);filter:blur(80px);will-change:left,top;
+/* SECTION STRUCTURE */
+.case-sec { border-bottom: var(--border-heavy); }
+.case-sec-header {
+  background: var(--black);
+  color: var(--white);
+  padding: 0.75rem 2rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  border-bottom: var(--border);
 }
+.case-sec-num {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  white-space: nowrap;
+  font-weight: 700;
+}
+.case-sec-title {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+.case-sec-inner { padding: 3rem 2rem; }
+.case-h2 {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+.case-body {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #333;
+  max-width: 680px;
+}
+.case-body p + p { margin-top: 1rem; }
+.case-body strong { color: var(--black); font-weight: 700; }
 
-/* ═══════════ SCROLLBAR ═══════════ */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--faint);border-radius:100px}
-::-webkit-scrollbar-thumb:hover{background:var(--dim)}
-*{scrollbar-width:thin;scrollbar-color:var(--faint) var(--bg)}
-
-/* ═══════════ NAV ═══════════ */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:6000;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:1.25rem 2.5rem;transition:background .5s,backdrop-filter .5s;
+/* SPLIT CARDS */
+.split-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border: var(--border);
+  margin-top: 2rem;
 }
-nav.scrolled{background:rgba(26,20,16,.85);backdrop-filter:blur(20px)}
-.nav-mark{font-family:var(--fd);font-weight:800;font-size:1.1rem;color:var(--cream);letter-spacing:.04em}
-.nav-mark i{color:var(--violet);font-style:normal}
-.nav-r{display:flex;align-items:center;gap:2rem}
-.nav-r a{font-family:var(--fm);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);transition:color .3s}
-.nav-r a:hover{color:var(--cream)}
-.nav-pill{
-  font-family:var(--fm);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--violet);padding:.35rem .9rem;border:1px solid rgba(167,139,250,.2);
-  border-radius:100px;display:flex;align-items:center;gap:.45rem;
+.split-card { padding: 1.5rem; border-right: var(--border); }
+.split-card:last-child { border-right: none; }
+.split-card-label {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
-.nav-pill::before{content:'';width:5px;height:5px;background:var(--violet);border-radius:50%;animation:blink 2s ease infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-
-/* ═══════════ FIXED CTA ═══════════ */
-.fixed-cta{
-  position:fixed;bottom:2rem;right:2rem;z-index:5500;
-  font-family:var(--fm);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--bg);background:var(--acid);
-  padding:.65rem 1.4rem;border:none;border-radius:2px;
-  display:flex;align-items:center;gap:.5rem;
-  box-shadow:0 4px 20px rgba(212,168,83,.2);
-  transition:transform .3s,box-shadow .3s,background .3s;
-}
-.fixed-cta:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(212,168,83,.3)}
-.fixed-cta.copied{background:var(--violet)}
-.fixed-cta .dot{width:5px;height:5px;background:var(--bg);border-radius:50%;animation:blink 2s ease infinite}
-@media(max-width:600px){.fixed-cta{bottom:1rem;right:1rem;font-size:.5rem;padding:.5rem 1rem}}
-
-/* ═══════════ SCROLL REVEALS ═══════════ */
-.rv{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
-.rv.in{opacity:1;transform:none}
-.rv-l{opacity:0;transform:translateX(-24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
-.rv-l.in{opacity:1;transform:none}
-.rv-r{opacity:0;transform:translateX(24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
-.rv-r.in{opacity:1;transform:none}
-.d1{transition-delay:.05s!important}.d2{transition-delay:.1s!important}.d3{transition-delay:.15s!important}
-.d4{transition-delay:.2s!important}.d5{transition-delay:.25s!important}.d6{transition-delay:.3s!important}
-
-/* ═══════════ HERO ═══════════ */
-.hero{
-  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
-  padding:8rem 2.5rem 5rem;position:relative;overflow:hidden;
-}
-.hero-glow{
-  position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
-  width:700px;height:700px;
-  background:radial-gradient(circle,rgba(167,139,250,.06) 0%,rgba(167,139,250,.02) 40%,transparent 70%);
-  pointer-events:none;
-}
-.hero-content{position:relative;z-index:2;max-width:800px}
-.hero-tag{
-  font-family:var(--fm);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--faint);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;
-  opacity:0;animation:fadeDown .8s ease forwards .1s;
-}
-.hero-tag span{color:var(--violet)}
-.hero-impact{
-  font-family:var(--fd);font-weight:800;
-  font-size:clamp(2.2rem,5.5vw,4.2rem);
-  line-height:1.05;letter-spacing:-.02em;color:var(--cream);
-  margin-bottom:1.5rem;
-  opacity:0;animation:fadeUp .9s ease forwards .2s;
-}
-.hero-impact em{font-family:var(--fb);font-weight:300;color:var(--violet);font-style:italic}
-.hero-sub{
-  font-family:var(--fb);font-size:clamp(1rem,1.6vw,1.2rem);
-  font-weight:300;color:var(--dim);max-width:560px;line-height:1.75;
-  margin-bottom:2.5rem;
-  opacity:0;animation:fadeUp .8s ease forwards .4s;
-}
-.hero-meta{
-  display:flex;gap:2.5rem;flex-wrap:wrap;margin-bottom:2.5rem;
-  opacity:0;animation:fadeUp .8s ease forwards .5s;
-}
-.hero-meta-item{display:flex;flex-direction:column;gap:.2rem}
-.hero-meta-label{font-family:var(--fm);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--faint)}
-.hero-meta-value{font-family:var(--fd);font-size:.85rem;font-weight:600;color:var(--cream)}
-.hero-cta{
-  display:flex;gap:1rem;flex-wrap:wrap;
-  opacity:0;animation:fadeUp .8s ease forwards .6s;
-}
-.btn-v{
-  font-family:var(--fm);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;
-  padding:.7rem 1.8rem;border:1px solid rgba(167,139,250,.3);color:var(--violet);
-  position:relative;overflow:hidden;transition:color .4s,border-color .4s,transform .3s;display:inline-flex;align-items:center;gap:.5rem;
-}
-.btn-v::before{content:'';position:absolute;inset:0;background:var(--violet);transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.22,1,.36,1)}
-.btn-v:hover{color:var(--bg);border-color:var(--violet);transform:translateY(-2px)}
-.btn-v:hover::before{transform:scaleX(1)}
-.btn-v span{position:relative;z-index:1}
-.btn-g{
-  font-family:var(--fm);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;
-  padding:.7rem 1.8rem;border:1px solid var(--line2);color:var(--dim);
-  position:relative;overflow:hidden;transition:color .4s,border-color .4s,transform .3s;display:inline-flex;align-items:center;gap:.5rem;
-}
-.btn-g::before{content:'';position:absolute;inset:0;background:var(--cream);transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.22,1,.36,1)}
-.btn-g:hover{color:var(--bg);border-color:var(--cream);transform:translateY(-2px)}
-.btn-g:hover::before{transform:scaleX(1)}
-.btn-g span{position:relative;z-index:1}
-.hero-scroll{
-  position:absolute;bottom:2.5rem;left:2.5rem;display:flex;align-items:center;gap:.75rem;
-  opacity:0;animation:fadeUp 1s ease forwards 1s;
-}
-.hero-scroll span{font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
-.scroll-bar{width:40px;height:1px;position:relative;overflow:hidden}
-.scroll-bar::after{content:'';position:absolute;left:-100%;top:0;width:100%;height:1px;background:var(--violet);animation:scrollSlide 1.8s ease infinite}
-@keyframes scrollSlide{0%{left:-100%}100%{left:100%}}
-@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-
-/* ═══════════ DIVIDER ═══════════ */
-.divider{height:1px;background:var(--line);margin:0 2.5rem}
-
-/* ═══════════ SECTIONS ═══════════ */
-section{position:relative;z-index:1}
-.sec-inner{max-width:780px;margin:0 auto;padding:6rem 2.5rem}
-.sec-tag{
-  font-family:var(--fm);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--faint);margin-bottom:2rem;display:flex;align-items:center;gap:1rem;
-}
-.sec-tag::after{content:'';flex:1;height:1px;background:var(--line)}
-.sec-tag .num{color:var(--violet)}
-.sec-title{
-  font-family:var(--fd);font-weight:700;font-size:clamp(1.6rem,3.5vw,2.6rem);
-  line-height:1.15;color:var(--cream);margin-bottom:1.25rem;
-}
-.sec-title em{font-family:var(--fb);font-weight:300;color:var(--violet);font-style:italic}
-.sec-body{font-weight:300;line-height:1.8;max-width:620px}
-.sec-body p+p{margin-top:1rem}
-.sec-body strong{color:var(--cream);font-weight:500}
-
-/* ═══════════ SPLIT CARDS ═══════════ */
-.split-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2.5rem}
-@media(max-width:640px){.split-grid{grid-template-columns:1fr}}
-.split-card{
-  padding:1.75rem;border:1px solid var(--line);
-  transition:border-color .4s,transform .3s,background .4s;
-}
-.split-card:hover{border-color:rgba(167,139,250,.2);transform:translateY(-3px);background:rgba(167,139,250,.02)}
-.split-card-label{
-  font-family:var(--fm);font-size:.45rem;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--faint);margin-bottom:.75rem;
-}
-.split-card-label.problem{color:var(--violet)}
-.split-card-label.solution{color:var(--acid)}
-.split-card-title{
-  font-family:var(--fd);font-size:1.1rem;font-weight:700;
-  color:var(--cream);margin-bottom:.75rem;line-height:1.3;
-}
-.split-card-body{font-family:var(--fb);font-size:.95rem;color:var(--dim);line-height:1.7;font-weight:300}
-
-/* ═══════════ FEATURE LIST ═══════════ */
-.feature-list{display:flex;flex-direction:column;gap:1rem;margin-top:2.5rem}
-.feature-card{
-  display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;
-  padding:1.5rem;border:1px solid var(--line);
-  transition:border-color .4s,background .4s;
-}
-.feature-card:hover{border-color:rgba(167,139,250,.2);background:rgba(167,139,250,.02)}
-.feature-icon{
-  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
-  font-size:1.1rem;border:1px solid rgba(167,139,250,.15);color:var(--violet);
-  flex-shrink:0;
-}
-.feature-title{font-family:var(--fd);font-weight:700;font-size:.95rem;color:var(--cream);margin-bottom:.35rem}
-.feature-body{font-family:var(--fb);font-size:.9rem;color:var(--dim);line-height:1.7;font-weight:300}
-.feature-tag{
-  display:inline-block;font-family:var(--fm);font-size:.45rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--violet);border:1px solid rgba(167,139,250,.15);padding:.2rem .6rem;margin-top:.5rem;
-}
-
-/* ═══════════ STATS ═══════════ */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:2.5rem}
-.stat-card{
-  padding:1.5rem;border:1px solid var(--line);position:relative;overflow:hidden;
-  transition:border-color .4s,transform .3s;
-}
-.stat-card:hover{border-color:rgba(167,139,250,.2);transform:translateY(-2px)}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--violet);opacity:0;transition:opacity .3s}
-.stat-card:hover::before{opacity:1}
-.stat-number{font-family:var(--fd);font-size:clamp(1.8rem,4vw,2.4rem);font-weight:800;color:var(--violet);line-height:1}
-.stat-label{font-family:var(--fb);font-size:.85rem;color:var(--dim);margin-top:.4rem;font-weight:300}
-
-/* ═══════════ TIMELINE ═══════════ */
-.timeline{position:relative;padding-left:2rem;margin-top:2.5rem;display:flex;flex-direction:column;gap:2rem}
-.timeline::before{content:'';position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:linear-gradient(to bottom,var(--violet),var(--faint))}
-.timeline-item{position:relative}
-.timeline-dot{
-  position:absolute;left:-1.7rem;top:5px;width:10px;height:10px;
-  border-radius:50%;background:var(--violet);box-shadow:0 0 8px rgba(167,139,250,.4);
-  border:2px solid var(--bg);
-}
-.timeline-label{font-family:var(--fm);font-size:.45rem;letter-spacing:.12em;text-transform:uppercase;color:var(--violet);margin-bottom:.2rem}
-.timeline-title{font-family:var(--fd);font-weight:700;font-size:.95rem;color:var(--cream);margin-bottom:.3rem}
-.timeline-body{font-family:var(--fb);font-size:.9rem;color:var(--dim);line-height:1.7;font-weight:300}
-
-/* ═══════════ REFLECTION CARDS ═══════════ */
-.reflection-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-top:2rem}
-@media(max-width:700px){.reflection-grid{grid-template-columns:1fr}}
-.reflection-card{
-  padding:1.5rem;border:1px solid var(--line);
-  transition:border-color .4s,transform .3s;
-}
-.reflection-card:hover{border-color:rgba(167,139,250,.2);transform:translateY(-2px)}
-.reflection-emoji{font-size:1.5rem;margin-bottom:.75rem}
-.reflection-title{font-family:var(--fd);font-weight:700;font-size:.85rem;color:var(--cream);margin-bottom:.35rem}
-.reflection-body{font-family:var(--fb);font-size:.85rem;color:var(--dim);line-height:1.65;font-weight:300}
-
-/* ═══════════ QUOTE ═══════════ */
-.quote-block{
-  border-left:2px solid var(--violet);padding:1.25rem 1.5rem;margin:2rem 0;
-  background:rgba(167,139,250,.03);position:relative;
-}
-.quote-text{font-family:var(--fb);font-size:1.1rem;font-weight:300;font-style:italic;color:var(--cream);line-height:1.7}
-.quote-author{font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:.5rem}
-
-/* ═══════════ CTA SECTION ═══════════ */
-.cta-section{
-  padding:6rem 2.5rem;text-align:center;position:relative;overflow:hidden;
-  border-top:1px solid var(--line);
-}
-.cta-glow{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:500px;height:300px;
-  background:radial-gradient(ellipse,rgba(167,139,250,.04),transparent 70%);
-  pointer-events:none;
-}
-.cta-title{font-family:var(--fd);font-weight:700;font-size:clamp(1.6rem,4vw,2.8rem);color:var(--cream);margin-bottom:1rem;position:relative}
-.cta-sub{font-family:var(--fb);font-size:1rem;color:var(--dim);margin-bottom:2.5rem;max-width:460px;margin-left:auto;margin-right:auto;position:relative;font-weight:300}
-.cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative}
-
-/* ═══════════ FOOTER ═══════════ */
-footer{border-top:1px solid var(--line);padding:2rem 2.5rem;text-align:center}
-footer p{font-family:var(--fm);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
-footer a{color:var(--dim);transition:color .3s}
-footer a:hover{color:var(--cream)}
-
-/* ═══════════ RESPONSIVE ═══════════ */
-@media(max-width:700px){
-  nav{padding:1rem 1.25rem}
-  .hero{padding:6rem 1.25rem 4rem}
-  .sec-inner{padding:4rem 1.25rem}
-  .hero-meta{gap:1.5rem}
-  .divider{margin:0 1.25rem}
+.split-card-label.danger { color: var(--red); }
+.split-card-label.good { color: green; }
+.split-card-label.accent { color: var(--project-accent); }
+.split-card-title { font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 0.5rem; line-height: 1.2; }
+.split-card-body { font-size: 12px; color: #555; line-height: 1.7; }
+@media(max-width:640px){
   .split-grid{grid-template-columns:1fr}
-  .reflection-grid{grid-template-columns:1fr}
-  .cta-section{padding:4rem 1.25rem}
+  .split-card{border-right:none;border-bottom:var(--border)}
+  .split-card:last-child{border-bottom:none}
 }
 
-/* ═══════════ INTERACTIVE UX ═══════════ */
-.case-img img, section img { transition: transform .6s cubic-bezier(.22,1,.36,1), filter .4s; }
-.case-img img:hover, section img:hover { transform: scale(1.03); filter: brightness(1.1); }
-[class*="card"], [class*="stat"], [class*="chip"], [class*="btn"] {
-  transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s;
+/* FEATURE LIST */
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  border: var(--border);
 }
+.feature-card {
+  display: grid;
+  grid-template-columns: 3rem 1fr;
+  border-bottom: var(--border);
+}
+.feature-card:last-child { border-bottom: none; }
+.feature-icon {
+  border-right: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--black);
+  color: var(--project-accent);
+}
+.feature-content { padding: 1.25rem; }
+.feature-title { font-size: 13px; font-weight: 700; text-transform: uppercase; margin-bottom: 0.4rem; letter-spacing: 0.03em; }
+.feature-body { font-size: 12px; color: #555; line-height: 1.7; margin-bottom: 0.5rem; }
+.feature-tag {
+  display: inline-block;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  border: 1px solid var(--black);
+  padding: 2px 8px;
+}
+
+/* TIMELINE */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2rem;
+  border: var(--border);
+}
+.timeline-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  border-bottom: var(--border);
+}
+.timeline-item:last-child { border-bottom: none; }
+.timeline-num {
+  padding: 1.25rem;
+  border-right: var(--border);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--project-accent);
+  background: var(--black);
+  display: flex; align-items: flex-start;
+  white-space: nowrap;
+  min-width: 7rem;
+}
+.timeline-content { padding: 1.25rem; }
+.timeline-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--mid); margin-bottom: 3px; }
+.timeline-title { font-size: 14px; font-weight: 700; text-transform: uppercase; margin-bottom: 0.4rem; }
+.timeline-body { font-size: 12px; color: #555; line-height: 1.7; }
+
+/* STATS GRID */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: var(--border);
+  border-top: none;
+}
+.stat-card {
+  padding: 1.5rem;
+  border-right: var(--border);
+  border-top: var(--border);
+}
+.stat-card:last-child { border-right: none; }
+.stat-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+  color: var(--project-accent);
+}
+.stat-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+@media(max-width:640px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stat-card:nth-child(2n){border-right:none}
+}
+
+/* REFLECTION GRID */
+.reflection-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: var(--border);
+  margin-top: 2rem;
+}
+.reflection-card { padding: 1.5rem; border-right: var(--border); }
+.reflection-card:last-child { border-right: none; }
+.reflection-num { font-size: 2rem; font-weight: 700; line-height: 1; margin-bottom: 0.5rem; color: var(--project-accent); }
+.reflection-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+.reflection-body { font-size: 11px; color: #555; line-height: 1.7; }
+@media(max-width:700px){
+  .reflection-grid{grid-template-columns:1fr}
+  .reflection-card{border-right:none;border-bottom:var(--border)}
+  .reflection-card:last-child{border-bottom:none}
+}
+
+/* QUOTE */
+.quote-block {
+  border-left: 4px solid var(--black);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  background: var(--yellow);
+}
+.quote-text { font-size: 14px; font-style: italic; line-height: 1.7; margin-bottom: 0.4rem; }
+.quote-author { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: #555; }
+
+/* CASE CTA */
+.case-cta {
+  background: var(--black);
+  color: var(--white);
+  padding: 4rem 2rem;
+  text-align: center;
+  border-bottom: var(--border-heavy);
+}
+.case-cta h2 { font-size: clamp(2rem, 5vw, 4rem); font-weight: 700; text-transform: uppercase; letter-spacing: -0.02em; margin-bottom: 1rem; }
+.case-cta h2 em { font-style: normal; color: var(--project-accent); }
+.case-cta p { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 2rem; letter-spacing: 0.05em; }
+.case-cta-links { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.cta-btn {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.75rem 1.75rem;
+  border: 2px solid var(--project-accent);
+  background: var(--project-accent);
+  color: var(--black);
+  display: inline-block;
+  transition: background 0.1s, color 0.1s;
+}
+.cta-btn:hover { background: var(--black); color: var(--project-accent); }
+.cta-btn.ghost {
+  background: transparent;
+  border-color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.6);
+}
+.cta-btn.ghost:hover { background: var(--white); color: var(--black); border-color: var(--white); }
+
+/* FOOTER */
+footer {
+  background: var(--black);
+  border-top: var(--border-heavy);
+  padding: 1.25rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+footer span, footer a {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+footer a:hover { color: var(--yellow); }
+
+/* FIXED CTA */
+.fixed-cta {
+  position: fixed;
+  bottom: 2rem; right: 2rem;
+  z-index: 500;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 0.75rem 1.4rem;
+  background: var(--lime);
+  color: var(--black);
+  border: 2px solid var(--black);
+  display: flex; align-items: center; gap: 0.5rem;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.fixed-cta:hover { background: var(--black); color: var(--lime); }
+.fixed-cta.copied { background: var(--red); color: var(--white); border-color: var(--red); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.1} }
 </style>
 </head>
 <body>
 
-<!-- Cursor -->
-<div id="cur"></div><div id="cur-dot"></div>
-<!-- Scroll progress -->
-<div id="progress"></div>
-<!-- Grain overlay -->
-<div id="grain"></div>
-<!-- Glow -->
-<div id="glow"></div>
-
-<!-- Fixed CTA -->
-<button class="fixed-cta" id="cta-copy" data-magnetic>
-  <span class="dot"></span>
-  <span id="cta-text">Copy Email</span>
-</button>
-
 <!-- NAV -->
-<nav id="nav">
-  <a href="index.html" class="nav-mark" data-magnetic>A<i>.</i>E</a>
-  <div class="nav-r">
-    <a href="index.html" data-magnetic>&larr; All Work</a>
-    <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" class="nav-pill" data-magnetic>Watch Demo</a>
-  </div>
+<nav>
+  <a href="index.html" class="nav-back">← Back to Portfolio</a>
+  <div class="nav-title">Topper AI — GPT Course Advising</div>
+  <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" rel="noopener" class="nav-proto">Watch Demo →</a>
 </nav>
 
-<!-- ═══════════ HERO ═══════════ -->
-<section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-content">
-    <div class="hero-tag"><span>Senior Capstone</span> &mdash; St. Edward's University &mdash; 2024</div>
-    <h1 class="hero-impact">Turned course selection from a 30-minute advisor wait into a <em>5-minute conversation.</em></h1>
-    <p class="hero-sub">Students were gaming the registration system because the advising process was broken. I built a GPT-powered chatbot trained on real St. Edward's course data &mdash; a conversational alternative that actually worked.</p>
-    <div class="hero-meta">
-      <div class="hero-meta-item"><span class="hero-meta-label">Role</span><span class="hero-meta-value">UX Research, Frontend, API, GPT Training</span></div>
-      <div class="hero-meta-item"><span class="hero-meta-label">Team</span><span class="hero-meta-value">Collaborative (partners: Python/Flask)</span></div>
-      <div class="hero-meta-item"><span class="hero-meta-label">Stack</span><span class="hero-meta-value">OpenAI GPT, Python, Flask, Figma</span></div>
+<!-- DOCUMENT HEADER -->
+<div class="doc-header">
+  <div class="doc-meta-bar">
+    <span class="doc-meta-item"><strong>PROJECT 05</strong></span>
+    <span class="doc-meta-item">Type: <strong>Senior Capstone</strong></span>
+    <span class="doc-meta-item">School: <strong>St. Edward's University</strong></span>
+    <span class="doc-meta-item">Year: <strong>2024</strong></span>
+    <span class="doc-meta-item">Role: <strong>UX Research, Frontend, API, GPT Training</strong></span>
+  </div>
+  <h1 class="doc-h1">TOPPER<br><em>AI</em></h1>
+  <p class="doc-subtitle">Turned course selection from a 30-minute advisor wait into a 5-minute conversation. A GPT-powered chatbot trained on real St. Edward's course data — a conversational alternative that actually worked.</p>
+  <div class="doc-cta">
+    <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" rel="noopener" class="doc-btn">Watch Demo →</a>
+    <a href="#overview" class="doc-btn ghost">Read Case Study ↓</a>
+  </div>
+  <div class="doc-stats-row">
+    <div class="doc-stat">
+      <div class="doc-stat-num">&lt;5min</div>
+      <div class="doc-stat-label">To Find Relevant Courses</div>
     </div>
-    <div class="hero-cta">
-      <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" class="btn-v" data-magnetic><span>Watch Demo &nearr;</span></a>
-      <a href="#overview" class="btn-g" data-magnetic><span>Read Case Study &darr;</span></a>
+    <div class="doc-stat">
+      <div class="doc-stat-num">500+</div>
+      <div class="doc-stat-label">Custom Training Queries</div>
+    </div>
+    <div class="doc-stat">
+      <div class="doc-stat-num">2</div>
+      <div class="doc-stat-label">Rounds of User Testing</div>
+    </div>
+    <div class="doc-stat">
+      <div class="doc-stat-num">1</div>
+      <div class="doc-stat-label">Major Infra Pivot</div>
     </div>
   </div>
-  <div class="hero-scroll"><div class="scroll-bar"></div><span>Scroll</span></div>
-</section>
+</div>
 
-<div class="divider"></div>
-
-<!-- ═══════════ 01 — OVERVIEW ═══════════ -->
-<section id="overview">
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">01</span> Overview</div>
-    <h2 class="sec-title rv">The advising bottleneck <em>was the problem</em></h2>
-    <div class="sec-body rv">
+<!-- 01 OVERVIEW -->
+<section class="case-sec" id="overview">
+  <div class="case-sec-header">
+    <span class="case-sec-num">01</span>
+    <span class="case-sec-title">Overview</span>
+  </div>
+  <div class="case-sec-inner">
+    <h2 class="case-h2">The advising bottleneck was the problem</h2>
+    <div class="case-body">
       <p>Course registration at St. Edward's was a mess. Students didn't always know what to take, when to take it, or how it fit their degree plan. <strong>Academic advisors were overloaded</strong>, the information existed but it was buried across catalogs and outdated PDFs. Students were making uninformed decisions or delaying registration entirely.</p>
-      <p>Topper was designed to bridge that gap &mdash; not replace advisors, but handle the questions that didn't need a human in the first place.</p>
+      <p>Topper was designed to bridge that gap — not replace advisors, but handle the questions that didn't need a human in the first place.</p>
     </div>
     <div class="split-grid">
-      <div class="split-card rv-l d1">
-        <div class="split-card-label problem">The Gap</div>
+      <div class="split-card">
+        <div class="split-card-label danger">The Gap</div>
         <div class="split-card-title">Students wait days for advisor meetings and still leave confused about electives</div>
         <div class="split-card-body">The bottleneck meant students made uninformed decisions about their schedules, or skipped advising entirely and hoped for the best.</div>
       </div>
-      <div class="split-card rv-r d2">
-        <div class="split-card-label solution">The Fix</div>
+      <div class="split-card">
+        <div class="split-card-label good">The Fix</div>
         <div class="split-card-title">AI chatbot trained on real course data gives answers in under 5 minutes</div>
         <div class="split-card-body">Topper provides instant, personalized course recommendations based on actual university data. No appointment needed.</div>
       </div>
@@ -431,148 +540,172 @@ footer a:hover{color:var(--cream)}
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- ═══════════ 02 — MY ROLE ═══════════ -->
-<section>
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">02</span> My Role</div>
-    <h2 class="sec-title rv">What I <em>actually</em> built</h2>
-    <div class="sec-body rv">
-      <p>This was a collaborative senior capstone. My partners handled the Python/Flask backend. Everything else &mdash; the research, the interface, the AI training, the mid-project infrastructure pivot &mdash; that was me.</p>
+<!-- 02 MY ROLE -->
+<section class="case-sec" id="role">
+  <div class="case-sec-header">
+    <span class="case-sec-num">02</span>
+    <span class="case-sec-title">My Role</span>
+  </div>
+  <div class="case-sec-inner">
+    <h2 class="case-h2">What I actually built</h2>
+    <div class="case-body">
+      <p>This was a collaborative senior capstone. My partners handled the Python/Flask backend. Everything else — the research, the interface, the AI training, the mid-project infrastructure pivot — that was me.</p>
     </div>
     <div class="feature-list">
-      <div class="feature-card rv d1">
-        <div class="feature-icon">&#128269;</div>
-        <div>
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-content">
           <div class="feature-title">UX Research</div>
-          <div class="feature-body">Mapped how students actually navigate course selection. Identified where the pain points were &mdash; not where the university thought they were.</div>
-          <div class="feature-tag">User Research</div>
+          <div class="feature-body">Mapped how students actually navigate course selection. Identified where the pain points were — not where the university thought they were.</div>
+          <span class="feature-tag">User Research</span>
         </div>
       </div>
-      <div class="feature-card rv d2">
-        <div class="feature-icon">&#127912;</div>
-        <div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <div class="feature-content">
           <div class="feature-title">Frontend Design</div>
           <div class="feature-body">Figma prototype for the full chat interface and user flow. Conversational UI for both mobile and desktop, focused on clarity and speed.</div>
-          <div class="feature-tag">Figma</div>
+          <span class="feature-tag">Figma</span>
         </div>
       </div>
-      <div class="feature-card rv d3">
-        <div class="feature-icon">&#128279;</div>
-        <div>
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <div class="feature-content">
           <div class="feature-title">API Configuration</div>
           <div class="feature-body">Integrated the OpenAI API and set up the data pipeline connecting course catalogs to the model.</div>
-          <div class="feature-tag">OpenAI API</div>
+          <span class="feature-tag">OpenAI API</span>
         </div>
       </div>
-      <div class="feature-card rv d4">
-        <div class="feature-icon">&#129302;</div>
-        <div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <div class="feature-content">
           <div class="feature-title">Custom GPT Training</div>
           <div class="feature-body">Built 500+ unique training queries to make the model give accurate, university-specific answers. Generic prompts don't cut it for specialized knowledge.</div>
-          <div class="feature-tag">500+ Queries</div>
+          <span class="feature-tag">500+ Queries</span>
         </div>
       </div>
-      <div class="feature-card rv d5">
-        <div class="feature-icon">&#128736;</div>
-        <div>
+      <div class="feature-card">
+        <div class="feature-icon">🔧</div>
+        <div class="feature-content">
           <div class="feature-title">Infrastructure Pivot</div>
           <div class="feature-body">When our original Google Cloud plan fell through, I led the pivot to OpenAI's updated API platform mid-project. Design thinking, not just technical fixes.</div>
-          <div class="feature-tag">Problem Solving</div>
+          <span class="feature-tag">Problem Solving</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- ═══════════ 03 — PROCESS ═══════════ -->
-<section>
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">03</span> Process</div>
-    <h2 class="sec-title rv">How we <em>built it</em></h2>
+<!-- 03 PROCESS -->
+<section class="case-sec" id="process">
+  <div class="case-sec-header">
+    <span class="case-sec-num">03</span>
+    <span class="case-sec-title">Process</span>
+  </div>
+  <div class="case-sec-inner">
+    <h2 class="case-h2">How we built it</h2>
     <div class="timeline">
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 1</div>
-        <div class="timeline-title">User Research</div>
-        <div class="timeline-body">Talked to students. Found out they needed fast, specific answers about courses, prerequisites, and degree requirements &mdash; not a better FAQ page.</div>
+      <div class="timeline-item">
+        <div class="timeline-num">Step 01</div>
+        <div class="timeline-content">
+          <div class="timeline-label">User Research</div>
+          <div class="timeline-title">Talked to students</div>
+          <div class="timeline-body">Found out they needed fast, specific answers about courses, prerequisites, and degree requirements — not a better FAQ page.</div>
+        </div>
       </div>
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 2</div>
-        <div class="timeline-title">Scoped the AI</div>
-        <div class="timeline-body">Determined what the chatbot should and shouldn't know. Setting clear boundaries was the difference between useful and hallucinating.</div>
+      <div class="timeline-item">
+        <div class="timeline-num">Step 02</div>
+        <div class="timeline-content">
+          <div class="timeline-label">AI Scoping</div>
+          <div class="timeline-title">Scoped the AI</div>
+          <div class="timeline-body">Determined what the chatbot should and shouldn't know. Setting clear boundaries was the difference between useful and hallucinating.</div>
+        </div>
       </div>
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 3</div>
-        <div class="timeline-title">Built training dataset</div>
-        <div class="timeline-body">Created 500+ queries covering courses, prerequisites, degree requirements, and scheduling. This was the real work &mdash; training data is everything.</div>
+      <div class="timeline-item">
+        <div class="timeline-num">Step 03</div>
+        <div class="timeline-content">
+          <div class="timeline-label">Data</div>
+          <div class="timeline-title">Built training dataset</div>
+          <div class="timeline-body">Created 500+ queries covering courses, prerequisites, degree requirements, and scheduling. This was the real work — training data is everything.</div>
+        </div>
       </div>
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 4</div>
-        <div class="timeline-title">Designed the interface</div>
-        <div class="timeline-body">Conversational UI designed in Figma. The goal: a student asks a question and gets a useful answer without thinking about the interface at all.</div>
+      <div class="timeline-item">
+        <div class="timeline-num">Step 04</div>
+        <div class="timeline-content">
+          <div class="timeline-label">Design</div>
+          <div class="timeline-title">Designed the interface</div>
+          <div class="timeline-body">Conversational UI designed in Figma. The goal: a student asks a question and gets a useful answer without thinking about the interface at all.</div>
+        </div>
       </div>
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 5</div>
-        <div class="timeline-title">User Testing (2 rounds)</div>
-        <div class="timeline-body">Tested whether students could find a relevant course in under 5 minutes. Result: yes &mdash; across both rounds. The chatbot was faster than the catalog.</div>
+      <div class="timeline-item">
+        <div class="timeline-num">Step 05</div>
+        <div class="timeline-content">
+          <div class="timeline-label">Validation</div>
+          <div class="timeline-title">User Testing (2 rounds)</div>
+          <div class="timeline-body">Tested whether students could find a relevant course in under 5 minutes. Result: yes — across both rounds. The chatbot was faster than the catalog.</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- ═══════════ 04 — RESULTS ═══════════ -->
-<section>
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">04</span> Results</div>
-    <h2 class="sec-title rv">What we <em>proved</em></h2>
-    <div class="sec-body rv">
-      <p>Topper was built and tested but not publicly released &mdash; it was a senior capstone, not a production launch. But the testing validated the core idea: <strong>students could get course answers faster through conversation than through the existing system.</strong></p>
+<!-- 04 RESULTS -->
+<section class="case-sec" id="results">
+  <div class="case-sec-header">
+    <span class="case-sec-num">04</span>
+    <span class="case-sec-title">Results</span>
+  </div>
+  <div class="case-sec-inner">
+    <h2 class="case-h2">What we proved</h2>
+    <div class="case-body">
+      <p>Topper was built and tested but not publicly released — it was a senior capstone, not a production launch. But the testing validated the core idea: <strong>students could get course answers faster through conversation than through the existing system.</strong></p>
     </div>
     <div class="stats-grid">
-      <div class="stat-card rv d1"><div class="stat-number">&lt;5 min</div><div class="stat-label">To find relevant courses (both rounds)</div></div>
-      <div class="stat-card rv d2"><div class="stat-number">500+</div><div class="stat-label">Custom training queries</div></div>
-      <div class="stat-card rv d3"><div class="stat-number">2</div><div class="stat-label">Rounds of user testing</div></div>
-      <div class="stat-card rv d4"><div class="stat-number">1</div><div class="stat-label">Major infra pivot navigated</div></div>
+      <div class="stat-card">
+        <div class="stat-number">&lt;5 min</div>
+        <div class="stat-label">To find relevant courses (both rounds)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">500+</div>
+        <div class="stat-label">Custom training queries</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">2</div>
+        <div class="stat-label">Rounds of user testing</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">1</div>
+        <div class="stat-label">Major infra pivot navigated</div>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- ═══════════ 05 — REFLECTION ═══════════ -->
-<section>
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">05</span> Reflection</div>
-    <h2 class="sec-title rv">What I <em>took away</em></h2>
-
-    <div class="quote-block rv">
+<!-- 05 REFLECTION -->
+<section class="case-sec" id="reflection">
+  <div class="case-sec-header">
+    <span class="case-sec-num">05</span>
+    <span class="case-sec-title">Reflection</span>
+  </div>
+  <div class="case-sec-inner">
+    <h2 class="case-h2">What I took away</h2>
+    <div class="quote-block">
       <div class="quote-text">"Custom training data is the difference between a chatbot and a useful one. Generic prompts don't cut it for specialized knowledge."</div>
-      <div class="quote-author">&mdash; Andre Espinoza</div>
+      <div class="quote-author">— Andre Espinoza</div>
     </div>
-
     <div class="reflection-grid">
-      <div class="reflection-card rv d1">
-        <div class="reflection-emoji">&#128218;</div>
+      <div class="reflection-card">
+        <div class="reflection-num">01</div>
         <div class="reflection-title">Training data is everything</div>
         <div class="reflection-body">The 500+ custom queries made the difference between a generic chatbot and one that actually knew the university's course catalog.</div>
       </div>
-      <div class="reflection-card rv d2">
-        <div class="reflection-emoji">&#128260;</div>
+      <div class="reflection-card">
+        <div class="reflection-num">02</div>
         <div class="reflection-title">Pivots are design problems</div>
         <div class="reflection-body">Mid-project infrastructure pivots require design thinking. You're re-architecting the solution, not just swapping a tool.</div>
       </div>
-      <div class="reflection-card rv d3">
-        <div class="reflection-emoji">&#129309;</div>
+      <div class="reflection-card">
+        <div class="reflection-num">03</div>
         <div class="reflection-title">Teaching is building</div>
         <div class="reflection-body">Teaching non-technical teammates how to use AI tools was as valuable as the build itself. The best tool fails if the team can't use it.</div>
       </div>
@@ -580,140 +713,39 @@ footer a:hover{color:var(--cream)}
   </div>
 </section>
 
-<div class="divider"></div>
-
-<!-- ═══════════ CTA ═══════════ -->
-<div class="cta-section">
-  <div class="cta-glow"></div>
-  <h2 class="cta-title rv">See more work</h2>
-  <p class="cta-sub rv">Topper AI was a senior capstone &mdash; explore the demo or head back to the portfolio.</p>
-  <div class="cta-buttons rv">
-    <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" class="btn-v" data-magnetic><span>Watch Demo &nearr;</span></a>
-    <a href="index.html" class="btn-g" data-magnetic><span>&larr; Back to Portfolio</span></a>
+<!-- CTA -->
+<div class="case-cta">
+  <h2>See More<br><em>Work</em></h2>
+  <p>Topper AI was a senior capstone — explore the demo or head back to the portfolio.</p>
+  <div class="case-cta-links">
+    <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" rel="noopener" class="cta-btn">Watch Demo →</a>
+    <a href="index.html" class="cta-btn ghost">← Back to Portfolio</a>
+    <a href="cartlog.html" class="cta-btn ghost">CartLog →</a>
   </div>
 </div>
 
 <footer>
-  <p>Designed &amp; built by <a href="index.html">Andre Espinoza</a></p>
+  <span>© 2025–2026 Andre Espinoza</span>
+  <span>Topper AI — GPT Course Advising</span>
+  <a href="index.html">andreespinoza.com</a>
 </footer>
 
+<!-- FIXED CTA -->
+<button class="fixed-cta" id="ctaBtn" onclick="copyEmail()">
+  <span style="width:6px;height:6px;background:currentColor;border-radius:50%;display:inline-block;animation:blink 1.5s ease infinite"></span>
+  Copy Email
+</button>
+
 <script>
-/* ─── CURSOR ─── */
-(function(){
-  var cur=document.getElementById('cur'),dot=document.getElementById('cur-dot'),glow=document.getElementById('glow');
-  if(!cur||!dot)return;
-  if(window.matchMedia('(hover:none)').matches)return;
-  var mx=0,my=0,cx=0,cy=0,gx=0,gy=0;
-  function lerp(a,b,t){return a+(b-a)*t}
-  document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
-  (function loop(){
-    cx=lerp(cx,mx,.12);cy=lerp(cy,my,.12);
-    cur.style.left=cx+'px';cur.style.top=cy+'px';
-    if(glow){gx=lerp(gx,mx,.03);gy=lerp(gy,my,.03);glow.style.left=gx+'px';glow.style.top=gy+'px'}
-    requestAnimationFrame(loop);
-  })();
-  var targets='a,button,.split-card,.feature-card,.stat-card,.reflection-card,.nav-mark,[data-magnetic]';
-  document.addEventListener('mouseover',function(e){if(e.target.closest(targets))cur.classList.add('hover')});
-  document.addEventListener('mouseout',function(e){if(e.target.closest(targets))cur.classList.remove('hover')});
-  document.addEventListener('mousedown',function(){cur.classList.add('click')});
-  document.addEventListener('mouseup',function(){cur.classList.remove('click')});
-  // Magnetic
-  document.querySelectorAll('[data-magnetic]').forEach(function(el){
-    el.addEventListener('mousemove',function(e){
-      var rect=el.getBoundingClientRect();
-      var dx=e.clientX-(rect.left+rect.width/2);
-      var dy=e.clientY-(rect.top+rect.height/2);
-      var dist=Math.hypot(dx,dy);
-      if(dist<80){var f=1-dist/80;el.style.transform='translate('+dx*f*.15+'px,'+dy*f*.15+'px)'}
-    });
-    el.addEventListener('mouseleave',function(){
-      el.style.transform='';el.style.transition='transform .5s cubic-bezier(.22,1,.36,1)';
-      setTimeout(function(){el.style.transition=''},500);
-    });
+function copyEmail() {
+  navigator.clipboard.writeText('andreespinoza02@gmail.com').then(() => {
+    const btn = document.getElementById('ctaBtn');
+    btn.classList.add('copied');
+    btn.textContent = '✓ Copied';
+    setTimeout(() => { btn.classList.remove('copied'); btn.innerHTML = '<span style="width:6px;height:6px;background:currentColor;border-radius:50%;display:inline-block;animation:blink 1.5s ease infinite"></span> Copy Email'; }, 2000);
   });
-})();
-
-/* ─── SCROLL PROGRESS ─── */
-(function(){
-  var bar=document.getElementById('progress');
-  window.addEventListener('scroll',function(){
-    bar.style.width=(window.scrollY/(document.body.scrollHeight-window.innerHeight)*100)+'%';
-  },{passive:true});
-})();
-
-/* ─── NAV SCROLL ─── */
-(function(){
-  var nav=document.getElementById('nav');
-  window.addEventListener('scroll',function(){
-    nav.classList.toggle('scrolled',window.scrollY>60);
-  },{passive:true});
-})();
-
-/* ─── SCROLL REVEALS ─── */
-(function(){
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}});
-  },{threshold:.05,rootMargin:'0px 0px -60px 0px'});
-  document.querySelectorAll('.rv,.rv-l,.rv-r').forEach(function(el){obs.observe(el)});
-})();
-
-/* ─── SMOOTH ANCHORS ─── */
-document.querySelectorAll('a[href^="#"]').forEach(function(a){
-  a.addEventListener('click',function(e){
-    var t=document.querySelector(a.getAttribute('href'));
-    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}
-  });
-});
-
-/* ─── COPY EMAIL CTA ─── */
-(function(){
-  var btn=document.getElementById('cta-copy');
-  var txt=document.getElementById('cta-text');
-  if(!btn)return;
-  btn.addEventListener('click',function(){
-    navigator.clipboard.writeText('andreespinoza02@gmail.com').then(function(){
-      txt.textContent='Copied!';
-      btn.classList.add('copied');
-      setTimeout(function(){txt.textContent='Copy Email';btn.classList.remove('copied')},2000);
-    });
-  });
-})();
-
-/* ─── 3D TILT ON CARDS ─── */
-(function(){
-  if(!window.matchMedia('(hover:hover)').matches)return;
-  document.querySelectorAll('[class*="card"],[class*="grid"] > div').forEach(function(card){
-    card.addEventListener('mousemove',function(e){
-      var rect=card.getBoundingClientRect();
-      var x=(e.clientX-rect.left)/rect.width-.5;
-      var y=(e.clientY-rect.top)/rect.height-.5;
-      card.style.transform='perspective(600px) rotateX('+(-y*4)+'deg) rotateY('+(x*4)+'deg) scale(1.02)';
-    });
-    card.addEventListener('mouseleave',function(){
-      card.style.transform='';
-      card.style.transition='transform .5s cubic-bezier(.22,1,.36,1)';
-      setTimeout(function(){card.style.transition=''},500);
-    });
-  });
-})();
-
-/* ─── SECTION PARALLAX DEPTH ─── */
-(function(){
-  if(!window.matchMedia('(hover:hover)').matches)return;
-  document.querySelectorAll('section').forEach(function(sec){
-    sec.addEventListener('mousemove',function(e){
-      var rect=sec.getBoundingClientRect();
-      var x=(e.clientX-rect.left)/rect.width-.5;
-      var y=(e.clientY-rect.top)/rect.height-.5;
-      var heading=sec.querySelector('h2,h3');
-      if(heading)heading.style.transform='translate('+(x*-6)+'px,'+(y*-4)+'px)';
-    });
-    sec.addEventListener('mouseleave',function(){
-      var heading=sec.querySelector('h2,h3');
-      if(heading){heading.style.transform='';heading.style.transition='transform .4s ease'}
-    });
-  });
-})();
+}
 </script>
+
 </body>
 </html>

@@ -17,8 +17,11 @@
   --white: #ffffff;
   --paper: #f5f2ed;
   --yellow: #ffe600;
+  --cyan: #00e5ff;
+  --coral: #ff4f58;
+  --lime: #b8ff00;
   --red: #ff2800;
-  --mid: #888888;
+  --mid: #666666;
   --light: #dddddd;
   --border: 2px solid #000000;
   --border-heavy: 4px solid #000000;
@@ -45,7 +48,7 @@ hr { border: none; border-top: var(--border); margin: 0; }
 .grid-line {
   position: fixed; top: 0; left: 50%;
   width: 1px; height: 100%;
-  background: rgba(0,0,0,0.05);
+  background: rgba(0,0,0,0.08);
   pointer-events: none; z-index: 0;
 }
 
@@ -97,7 +100,7 @@ nav {
   font-size: 10px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: var(--yellow);
+  color: var(--cyan);
   padding: 0 1.25rem;
   display: flex; align-items: center; gap: 0.5rem;
   border-left: 2px solid rgba(255,255,255,0.2);
@@ -105,7 +108,7 @@ nav {
 .nav-avail::before {
   content: '';
   width: 6px; height: 6px;
-  background: var(--yellow);
+  background: var(--cyan);
   border-radius: 50%;
   animation: blink 1.5s ease infinite;
 }
@@ -132,7 +135,7 @@ nav {
   text-transform: uppercase;
   color: rgba(255,255,255,0.35);
 }
-.hero-top span:first-child { color: var(--yellow); }
+.hero-top span:first-child { color: var(--cyan); }
 .hero-main {
   padding: 4rem 2rem 3rem;
   display: grid;
@@ -215,7 +218,7 @@ nav {
 
 /* ═══════════ MARQUEE ═══════════ */
 .marquee-bar {
-  background: var(--yellow);
+  background: var(--lime);
   border-bottom: var(--border);
   overflow: hidden;
   white-space: nowrap;
@@ -296,7 +299,7 @@ nav {
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  background: var(--yellow);
+  background: var(--coral);
   border-bottom: var(--border);
   font-weight: 700;
 }
@@ -359,7 +362,7 @@ nav {
   font-size: 14px;
   font-weight: 600;
   line-height: 1.6;
-  background: var(--yellow);
+  background: var(--coral);
   max-width: 560px;
 }
 @media(max-width:700px){
@@ -423,10 +426,11 @@ nav {
   font-weight: 600;
 }
 .proj-tag.hl {
-  background: var(--black);
-  color: var(--white);
+  background: var(--coral);
+  color: var(--black);
+  border-color: var(--coral);
 }
-.project-row:hover .proj-tag.hl { background: var(--white); color: var(--black); }
+.project-row:hover .proj-tag.hl { background: var(--black); color: var(--white); border-color: var(--black); }
 .project-row:hover .proj-tag { border-color: var(--black); }
 .proj-right {
   padding: 1.5rem;
@@ -644,7 +648,7 @@ nav {
   transition: background 0.1s, color 0.1s;
   cursor: default;
 }
-.skill-chip:hover { background: var(--black); color: var(--white); }
+.skill-chip:hover { background: var(--lime); color: var(--black); }
 @media(max-width:700px){
   .skills-grid{grid-template-columns:1fr}
   .skills-col{border-right:none;border-bottom:var(--border)}
@@ -743,7 +747,7 @@ footer a:hover { color: var(--yellow); }
   text-transform: uppercase;
   font-weight: 700;
   padding: 0.75rem 1.4rem;
-  background: var(--yellow);
+  background: var(--lime);
   color: var(--black);
   border: 2px solid var(--black);
   display: flex; align-items: center; gap: 0.5rem;
@@ -752,6 +756,14 @@ footer a:hover { color: var(--yellow); }
 }
 .fixed-cta:hover { background: var(--black); color: var(--yellow); }
 .fixed-cta.copied { background: var(--red); color: var(--white); border-color: var(--red); }
+
+@media(prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
 
 /* ═══════════ TRUST STRIP ═══════════ */
 .trust-bar {
@@ -1182,7 +1194,7 @@ footer a:hover { color: var(--yellow); }
 
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer>
-  <span>© 2024 Andre Espinoza</span>
+  <span>© 2025–2026 Andre Espinoza</span>
   <span>EP | ATX — UX Designer</span>
   <a href="mailto:andreespinoza02@gmail.com">andreespinoza02@gmail.com</a>
 </footer>
