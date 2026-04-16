@@ -50,7 +50,7 @@ img { max-width: 100%; display: block; }
 
 /* ═══════════ CUSTOM CURSOR ═══════════ */
 @media(hover:hover)and(pointer:fine) {
-  * { cursor: none !important; }
+  .hero, .work, .about, .contact { cursor: none !important; }
   #cur {
     position: fixed; z-index: 9999; pointer-events: none;
     width: 14px; height: 14px;
@@ -484,7 +484,9 @@ nav.scrolled {
   align-items: baseline;
   margin-bottom: 3rem;
   padding-bottom: 1.5rem;
+  border-top: 1px solid var(--accent);
   border-bottom: 1px solid var(--rule);
+  padding-top: 1rem;
 }
 .sec-header h2 {
   font-family: var(--fd);
@@ -509,7 +511,7 @@ nav.scrolled {
   transition: background .3s;
   cursor: pointer;
 }
-.project-card:hover { background: var(--paper2); }
+.project-card:hover { background: rgba(139,74,47,.06); }
 .pc-row {
   display: grid;
   grid-template-columns: 3rem 1fr auto auto;
@@ -868,6 +870,15 @@ footer a:hover { color: var(--accent); }
 @media(max-width: 1024px) {
   .skills-grid { grid-template-columns: 1fr 1fr; }
 }
+/* ─── TABLET COLLAGE FIX ─── */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hc-1 { width: 140px; top: 8%; left: 1%; }
+  .hc-2 { width: 120px; top: 5%; right: 4%; }
+  .hc-3 { width: 160px; bottom: 12%; right: 1%; }
+  .hc-4 { width: 130px; bottom: 8%; left: 2%; }
+  .hc-5 { width: 110px; top: 35%; right: 12%; }
+  .hc-6 { width: 120px; top: 52%; left: .5%; }
+}
 @media(max-width: 768px) {
   nav { padding: 1.25rem 1.5rem; }
   .nav-r a { display: none; }
@@ -945,7 +956,7 @@ footer a:hover { color: var(--accent); }
 
   <div class="hero-content">
     <div class="hero-kicker"><span>EP | ATX — UX Designer</span></div>
-    <h1 class="hero-name" id="hero-text"></h1>
+    <h1 class="hero-name" id="hero-text"><noscript>ANDRE ESPINOZA.</noscript></h1>
     <p class="hero-sub">pondering interfaces between people, code, and culture since the Minecraft texture pack days.</p>
     <div class="hero-bottom">
       <div class="hero-roles">
@@ -1293,7 +1304,7 @@ footer a:hover { color: var(--accent); }
     <p class="rv d1">Open to UX design, AI workflow, and product roles. Based in Austin — down for remote.</p>
     <div class="contact-links rv d2">
       <a href="mailto:andreespinoza02@gmail.com" class="c-btn primary" data-magnetic>andreespinoza02@gmail.com</a>
-      <a href="tel:9153009140" class="c-btn" data-magnetic>915-300-9140</a>
+      <a href="tel:9153009140" class="c-btn" data-magnetic>915&#8209;300&#8209;9140</a>
       <a href="https://www.linkedin.com/in/aespin22" target="_blank" rel="noopener" class="c-btn" data-magnetic>LinkedIn</a>
       <a href="https://github.com/vnndre" target="_blank" rel="noopener" class="c-btn" data-magnetic>GitHub</a>
     </div>
@@ -1306,7 +1317,7 @@ footer a:hover { color: var(--accent); }
 
 <!-- ═══════════ FOOTER ═══════════ -->
 <footer>
-  <span>&copy; 2026 Andre Espinoza — EP | ATX</span>
+  <span>&copy; 2025–2026 Andre Espinoza — EP | ATX</span>
   <a href="#hero">Back to Top ↑</a>
 </footer>
 

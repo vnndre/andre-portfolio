@@ -4,478 +4,594 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Topper AI — Case Study by Andre Espinoza</title>
+<meta name="description" content="Topper AI — GPT-powered course advisor chatbot built for St. Edward's University. Turned 30-minute advisor waits into 5-minute conversations.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>◈</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,300;1,9..144,400;1,9..144,700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 /* ═══════════ TOKENS ═══════════ */
-:root{
-  --bg:#1a1410;
-  --bg2:#211b15;
-  --surface:#2a2520;
-  --line:rgba(255,255,255,.06);
-  --line2:rgba(255,255,255,.1);
-  --cream:#ede6d8;
-  --text:#c8bfae;
-  --dim:#6b6256;
-  --faint:#3a352e;
-  --acid:#d4a853;
-  --violet:#a78bfa;
-  --fd:'Syne',sans-serif;
-  --fb:'Crimson Pro',serif;
-  --fm:'JetBrains Mono',monospace;
+:root {
+  --paper: #faf7f2;
+  --paper2: #f4f0e8;
+  --ink: #1a1a18;
+  --ink2: #2c2c2a;
+  --muted: #7a7468;
+  --faint: #c8c0b4;
+  --rule: rgba(26,26,24,.1);
+  --rule2: rgba(26,26,24,.18);
+  --accent: #6b5b95;    /* muted purple — Topper AI brand feeling */
+  --accent2: #8b7ab5;
+  --accent-rgb: 107,91,149;
+  --fd: 'Fraunces', Georgia, serif;
+  --fb: 'Inter', system-ui, sans-serif;
+  --fm: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+body { background: var(--paper); color: var(--ink); font-family: var(--fb); font-size: 1rem; line-height: 1.65; overflow-x: hidden; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ─── SCROLL PROGRESS ─── */
+#progress { position: fixed; top: 0; left: 0; height: 1px; z-index: 9000; background: var(--accent); width: 0; }
+
+/* ─── GRAIN ─── */
+#grain {
+  position: fixed; inset: 0; z-index: 8000; pointer-events: none;
+  opacity: .03; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 600'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3C/svg%3E");
+  background-repeat: repeat; background-size: 200px;
 }
 
-/* ═══════════ RESET ═══════════ */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:1.05rem;line-height:1.7;overflow-x:hidden}
-a{color:inherit;text-decoration:none}
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 6000;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1.25rem 3rem;
+  border-bottom: 1px solid transparent;
+  transition: border-color .4s, background .4s, backdrop-filter .4s;
+}
+nav.scrolled { background: rgba(250,247,242,.92); backdrop-filter: blur(12px); border-color: var(--rule); }
+.nav-logo {
+  font-family: var(--fd); font-weight: 400; font-size: 1rem;
+  color: var(--ink); letter-spacing: .01em;
+}
+.nav-logo em { font-style: italic; color: var(--accent); }
+.nav-back {
+  font-family: var(--fm); font-size: .6rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); transition: color .3s;
+  display: flex; align-items: center; gap: .5rem;
+}
+.nav-back:hover { color: var(--accent); }
+.nav-pill {
+  font-family: var(--fm); font-size: .6rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--paper); background: var(--accent);
+  padding: .45rem .9rem;
+  transition: background .3s;
+}
+.nav-pill:hover { background: var(--ink); }
 
-/* ═══════════ CURSOR ═══════════ */
-@media(hover:hover)and(pointer:fine){
-  *{cursor:none!important}
-  #cur{
-    position:fixed;z-index:9999;pointer-events:none;
-    width:16px;height:16px;
-    border:1.5px solid var(--cream);
-    border-radius:50%;
-    transform:translate(-50%,-50%);
-    transition:width .3s cubic-bezier(.22,1,.36,1),height .3s cubic-bezier(.22,1,.36,1),
-               background .3s,border-color .3s,opacity .25s;
-    mix-blend-mode:difference;
-    will-change:transform,width,height;
-  }
-  #cur.hover{
-    width:56px;height:56px;
-    background:var(--acid);border-color:var(--acid);
-    mix-blend-mode:normal;opacity:.8;
-  }
-  #cur.click{width:40px;height:40px;background:var(--violet);border-color:var(--violet)}
-  #cur-dot{
-    position:fixed;z-index:10000;pointer-events:none;
-    width:5px;height:5px;background:var(--cream);
-    border-radius:50%;transform:translate(-50%,-50%);
-    transition:opacity .2s,transform .15s;will-change:transform;
-  }
-  #cur.hover~#cur-dot{opacity:0;transform:translate(-50%,-50%) scale(0)}
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 8rem 3rem 0;
+  border-bottom: 1px solid var(--rule2);
+  position: relative; overflow: hidden;
 }
-@media(hover:none),(pointer:coarse){#cur,#cur-dot{display:none!important}}
+.hero-above-fold {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 5rem;
+  align-items: end;
+  padding-bottom: 3rem;
+}
+.hero-kicker {
+  font-family: var(--fm); font-size: .6rem;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.hero-kicker::before { content: 'IV'; color: var(--faint); }
+.hero h1 {
+  font-family: var(--fd); font-weight: 900;
+  font-size: clamp(3.5rem, 8vw, 7.5rem);
+  line-height: .9; letter-spacing: -.03em;
+  color: var(--ink); margin-bottom: 1.5rem;
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero-sub {
+  font-family: var(--fd); font-style: italic; font-weight: 300;
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  color: var(--muted); max-width: 520px;
+  line-height: 1.6;
+}
+.hero-byline { padding-bottom: .25rem; }
+.hero-byline-label {
+  font-family: var(--fm); font-size: .55rem;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--faint); margin-bottom: 1.5rem;
+}
+.hero-meta-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+.meta-label {
+  font-family: var(--fm); font-size: .55rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--faint); margin-bottom: .2rem;
+}
+.meta-val {
+  font-family: var(--fd); font-style: italic;
+  font-size: .95rem; color: var(--ink2);
+}
+.read-time {
+  font-family: var(--fm); font-size: .6rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted);
+  display: flex; align-items: center; gap: .5rem;
+}
+.read-time::before { content: '◈'; color: var(--accent); }
 
-/* ═══════════ SCROLL PROGRESS ═══════════ */
-#progress{position:fixed;top:0;left:0;height:2px;z-index:9000;background:linear-gradient(90deg,var(--violet),var(--acid));width:0;will-change:width}
-
-/* ═══════════ GRAIN ═══════════ */
-#grain{
-  position:fixed;inset:0;z-index:8000;pointer-events:none;opacity:.14;mix-blend-mode:overlay;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+/* Hero bottom bar */
+.hero-bottom-bar {
+  border-top: 1px solid var(--rule);
+  padding: 1.25rem 0;
+  display: flex; gap: 2.5rem; align-items: center;
 }
-
-/* ═══════════ WARM VIGNETTE ═══════════ */
-body::after{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 10%,rgba(196,149,106,.06),transparent),
-    radial-gradient(ellipse 60% 50% at 80% 90%,rgba(139,69,19,.04),transparent),
-    linear-gradient(180deg,rgba(255,250,240,.015) 0%,transparent 30%,rgba(0,0,0,.1) 100%);
+.cta-link {
+  font-family: var(--fd); font-style: italic;
+  font-size: .95rem; color: var(--accent);
+  border-bottom: 1px solid rgba(107,91,149,.3);
+  transition: border-color .3s;
 }
-
-/* ═══════════ GLOW ═══════════ */
-#glow{
-  position:fixed;width:600px;height:600px;border-radius:50%;pointer-events:none;z-index:0;
-  background:radial-gradient(circle,rgba(167,139,250,.04) 0%,transparent 70%);
-  transform:translate(-50%,-50%);filter:blur(80px);will-change:left,top;
-}
-
-/* ═══════════ SCROLLBAR ═══════════ */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--faint);border-radius:100px}
-::-webkit-scrollbar-thumb:hover{background:var(--dim)}
-*{scrollbar-width:thin;scrollbar-color:var(--faint) var(--bg)}
-
-/* ═══════════ NAV ═══════════ */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:6000;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:1.25rem 2.5rem;transition:background .5s,backdrop-filter .5s;
-}
-nav.scrolled{background:rgba(26,20,16,.85);backdrop-filter:blur(20px)}
-.nav-mark{font-family:var(--fd);font-weight:800;font-size:1.1rem;color:var(--cream);letter-spacing:.04em}
-.nav-mark i{color:var(--violet);font-style:normal}
-.nav-r{display:flex;align-items:center;gap:2rem}
-.nav-r a{font-family:var(--fm);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);transition:color .3s}
-.nav-r a:hover{color:var(--cream)}
-.nav-pill{
-  font-family:var(--fm);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--violet);padding:.35rem .9rem;border:1px solid rgba(167,139,250,.2);
-  border-radius:100px;display:flex;align-items:center;gap:.45rem;
-}
-.nav-pill::before{content:'';width:5px;height:5px;background:var(--violet);border-radius:50%;animation:blink 2s ease infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-
-/* ═══════════ FIXED CTA ═══════════ */
-.fixed-cta{
-  position:fixed;bottom:2rem;right:2rem;z-index:5500;
-  font-family:var(--fm);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--bg);background:var(--acid);
-  padding:.65rem 1.4rem;border:none;border-radius:2px;
-  display:flex;align-items:center;gap:.5rem;
-  box-shadow:0 4px 20px rgba(212,168,83,.2);
-  transition:transform .3s,box-shadow .3s,background .3s;
-}
-.fixed-cta:hover{transform:translateY(-2px);box-shadow:0 6px 30px rgba(212,168,83,.3)}
-.fixed-cta.copied{background:var(--violet)}
-.fixed-cta .dot{width:5px;height:5px;background:var(--bg);border-radius:50%;animation:blink 2s ease infinite}
-@media(max-width:600px){.fixed-cta{bottom:1rem;right:1rem;font-size:.5rem;padding:.5rem 1rem}}
-
-/* ═══════════ SCROLL REVEALS ═══════════ */
-.rv{opacity:0;transform:translateY(24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
-.rv.in{opacity:1;transform:none}
-.rv-l{opacity:0;transform:translateX(-24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
-.rv-l.in{opacity:1;transform:none}
-.rv-r{opacity:0;transform:translateX(24px);transition:opacity .6s cubic-bezier(.16,1,.3,1),transform .6s cubic-bezier(.16,1,.3,1)}
-.rv-r.in{opacity:1;transform:none}
-.d1{transition-delay:.05s!important}.d2{transition-delay:.1s!important}.d3{transition-delay:.15s!important}
-.d4{transition-delay:.2s!important}.d5{transition-delay:.25s!important}.d6{transition-delay:.3s!important}
-
-/* ═══════════ HERO ═══════════ */
-.hero{
-  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
-  padding:8rem 2.5rem 5rem;position:relative;overflow:hidden;
-}
-.hero-glow{
-  position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
-  width:700px;height:700px;
-  background:radial-gradient(circle,rgba(167,139,250,.06) 0%,rgba(167,139,250,.02) 40%,transparent 70%);
-  pointer-events:none;
-}
-.hero-content{position:relative;z-index:2;max-width:800px}
-.hero-tag{
-  font-family:var(--fm);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--faint);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;
-  opacity:0;animation:fadeDown .8s ease forwards .1s;
-}
-.hero-tag span{color:var(--violet)}
-.hero-impact{
-  font-family:var(--fd);font-weight:800;
-  font-size:clamp(2.2rem,5.5vw,4.2rem);
-  line-height:1.05;letter-spacing:-.02em;color:var(--cream);
-  margin-bottom:1.5rem;
-  opacity:0;animation:fadeUp .9s ease forwards .2s;
-}
-.hero-impact em{font-family:var(--fb);font-weight:300;color:var(--violet);font-style:italic}
-.hero-sub{
-  font-family:var(--fb);font-size:clamp(1rem,1.6vw,1.2rem);
-  font-weight:300;color:var(--dim);max-width:560px;line-height:1.75;
-  margin-bottom:2.5rem;
-  opacity:0;animation:fadeUp .8s ease forwards .4s;
-}
-.hero-meta{
-  display:flex;gap:2.5rem;flex-wrap:wrap;margin-bottom:2.5rem;
-  opacity:0;animation:fadeUp .8s ease forwards .5s;
-}
-.hero-meta-item{display:flex;flex-direction:column;gap:.2rem}
-.hero-meta-label{font-family:var(--fm);font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:var(--faint)}
-.hero-meta-value{font-family:var(--fd);font-size:.85rem;font-weight:600;color:var(--cream)}
-.hero-cta{
-  display:flex;gap:1rem;flex-wrap:wrap;
-  opacity:0;animation:fadeUp .8s ease forwards .6s;
-}
-.btn-v{
-  font-family:var(--fm);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;
-  padding:.7rem 1.8rem;border:1px solid rgba(167,139,250,.3);color:var(--violet);
-  position:relative;overflow:hidden;transition:color .4s,border-color .4s,transform .3s;display:inline-flex;align-items:center;gap:.5rem;
-}
-.btn-v::before{content:'';position:absolute;inset:0;background:var(--violet);transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.22,1,.36,1)}
-.btn-v:hover{color:var(--bg);border-color:var(--violet);transform:translateY(-2px)}
-.btn-v:hover::before{transform:scaleX(1)}
-.btn-v span{position:relative;z-index:1}
-.btn-g{
-  font-family:var(--fm);font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;
-  padding:.7rem 1.8rem;border:1px solid var(--line2);color:var(--dim);
-  position:relative;overflow:hidden;transition:color .4s,border-color .4s,transform .3s;display:inline-flex;align-items:center;gap:.5rem;
-}
-.btn-g::before{content:'';position:absolute;inset:0;background:var(--cream);transform:scaleX(0);transform-origin:left;transition:transform .45s cubic-bezier(.22,1,.36,1)}
-.btn-g:hover{color:var(--bg);border-color:var(--cream);transform:translateY(-2px)}
-.btn-g:hover::before{transform:scaleX(1)}
-.btn-g span{position:relative;z-index:1}
-.hero-scroll{
-  position:absolute;bottom:2.5rem;left:2.5rem;display:flex;align-items:center;gap:.75rem;
-  opacity:0;animation:fadeUp 1s ease forwards 1s;
-}
-.hero-scroll span{font-family:var(--fm);font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--faint)}
-.scroll-bar{width:40px;height:1px;position:relative;overflow:hidden}
-.scroll-bar::after{content:'';position:absolute;left:-100%;top:0;width:100%;height:1px;background:var(--violet);animation:scrollSlide 1.8s ease infinite}
-@keyframes scrollSlide{0%{left:-100%}100%{left:100%}}
-@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
-@keyframes fadeDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-
-/* ═══════════ DIVIDER ═══════════ */
-.divider{height:1px;background:var(--line);margin:0 2.5rem}
-
-/* ═══════════ SECTIONS ═══════════ */
-section{position:relative;z-index:1}
-.sec-inner{max-width:780px;margin:0 auto;padding:6rem 2.5rem}
-.sec-tag{
-  font-family:var(--fm);font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--faint);margin-bottom:2rem;display:flex;align-items:center;gap:1rem;
-}
-.sec-tag::after{content:'';flex:1;height:1px;background:var(--line)}
-.sec-tag .num{color:var(--violet)}
-.sec-title{
-  font-family:var(--fd);font-weight:700;font-size:clamp(1.6rem,3.5vw,2.6rem);
-  line-height:1.15;color:var(--cream);margin-bottom:1.25rem;
-}
-.sec-title em{font-family:var(--fb);font-weight:300;color:var(--violet);font-style:italic}
-.sec-body{font-weight:300;line-height:1.8;max-width:620px}
-.sec-body p+p{margin-top:1rem}
-.sec-body strong{color:var(--cream);font-weight:500}
-
-/* ═══════════ SPLIT CARDS ═══════════ */
-.split-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2.5rem}
-@media(max-width:640px){.split-grid{grid-template-columns:1fr}}
-.split-card{
-  padding:1.75rem;border:1px solid var(--line);
-  transition:border-color .4s,transform .3s,background .4s;
-}
-.split-card:hover{border-color:rgba(167,139,250,.2);transform:translateY(-3px);background:rgba(167,139,250,.02)}
-.split-card-label{
-  font-family:var(--fm);font-size:.45rem;letter-spacing:.15em;text-transform:uppercase;
-  color:var(--faint);margin-bottom:.75rem;
-}
-.split-card-label.problem{color:var(--violet)}
-.split-card-label.solution{color:var(--acid)}
-.split-card-title{
-  font-family:var(--fd);font-size:1.1rem;font-weight:700;
-  color:var(--cream);margin-bottom:.75rem;line-height:1.3;
-}
-.split-card-body{font-family:var(--fb);font-size:.95rem;color:var(--dim);line-height:1.7;font-weight:300}
-
-/* ═══════════ FEATURE LIST ═══════════ */
-.feature-list{display:flex;flex-direction:column;gap:1rem;margin-top:2.5rem}
-.feature-card{
-  display:grid;grid-template-columns:auto 1fr;gap:1.5rem;align-items:start;
-  padding:1.5rem;border:1px solid var(--line);
-  transition:border-color .4s,background .4s;
-}
-.feature-card:hover{border-color:rgba(167,139,250,.2);background:rgba(167,139,250,.02)}
-.feature-icon{
-  width:40px;height:40px;display:flex;align-items:center;justify-content:center;
-  font-size:1.1rem;border:1px solid rgba(167,139,250,.15);color:var(--violet);
-  flex-shrink:0;
-}
-.feature-title{font-family:var(--fd);font-weight:700;font-size:.95rem;color:var(--cream);margin-bottom:.35rem}
-.feature-body{font-family:var(--fb);font-size:.9rem;color:var(--dim);line-height:1.7;font-weight:300}
-.feature-tag{
-  display:inline-block;font-family:var(--fm);font-size:.45rem;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--violet);border:1px solid rgba(167,139,250,.15);padding:.2rem .6rem;margin-top:.5rem;
+.cta-link:hover { border-color: var(--accent); }
+.scroll-hint-text {
+  font-family: var(--fm); font-size: .55rem;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--faint); margin-left: auto;
 }
 
-/* ═══════════ STATS ═══════════ */
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:2.5rem}
-.stat-card{
-  padding:1.5rem;border:1px solid var(--line);position:relative;overflow:hidden;
-  transition:border-color .4s,transform .3s;
-}
-.stat-card:hover{border-color:rgba(167,139,250,.2);transform:translateY(-2px)}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--violet);opacity:0;transition:opacity .3s}
-.stat-card:hover::before{opacity:1}
-.stat-number{font-family:var(--fd);font-size:clamp(1.8rem,4vw,2.4rem);font-weight:800;color:var(--violet);line-height:1}
-.stat-label{font-family:var(--fb);font-size:.85rem;color:var(--dim);margin-top:.4rem;font-weight:300}
-
-/* ═══════════ TIMELINE ═══════════ */
-.timeline{position:relative;padding-left:2rem;margin-top:2.5rem;display:flex;flex-direction:column;gap:2rem}
-.timeline::before{content:'';position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:linear-gradient(to bottom,var(--violet),var(--faint))}
-.timeline-item{position:relative}
-.timeline-dot{
-  position:absolute;left:-1.7rem;top:5px;width:10px;height:10px;
-  border-radius:50%;background:var(--violet);box-shadow:0 0 8px rgba(167,139,250,.4);
-  border:2px solid var(--bg);
-}
-.timeline-label{font-family:var(--fm);font-size:.45rem;letter-spacing:.12em;text-transform:uppercase;color:var(--violet);margin-bottom:.2rem}
-.timeline-title{font-family:var(--fd);font-weight:700;font-size:.95rem;color:var(--cream);margin-bottom:.3rem}
-.timeline-body{font-family:var(--fb);font-size:.9rem;color:var(--dim);line-height:1.7;font-weight:300}
-
-/* ═══════════ REFLECTION CARDS ═══════════ */
-.reflection-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-top:2rem}
-@media(max-width:700px){.reflection-grid{grid-template-columns:1fr}}
-.reflection-card{
-  padding:1.5rem;border:1px solid var(--line);
-  transition:border-color .4s,transform .3s;
-}
-.reflection-card:hover{border-color:rgba(167,139,250,.2);transform:translateY(-2px)}
-.reflection-emoji{font-size:1.5rem;margin-bottom:.75rem}
-.reflection-title{font-family:var(--fd);font-weight:700;font-size:.85rem;color:var(--cream);margin-bottom:.35rem}
-.reflection-body{font-family:var(--fb);font-size:.85rem;color:var(--dim);line-height:1.65;font-weight:300}
-
-/* ═══════════ QUOTE ═══════════ */
-.quote-block{
-  border-left:2px solid var(--violet);padding:1.25rem 1.5rem;margin:2rem 0;
-  background:rgba(167,139,250,.03);position:relative;
-}
-.quote-text{font-family:var(--fb);font-size:1.1rem;font-weight:300;font-style:italic;color:var(--cream);line-height:1.7}
-.quote-author{font-family:var(--fm);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:.5rem}
-
-/* ═══════════ CTA SECTION ═══════════ */
-.cta-section{
-  padding:6rem 2.5rem;text-align:center;position:relative;overflow:hidden;
-  border-top:1px solid var(--line);
-}
-.cta-glow{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  width:500px;height:300px;
-  background:radial-gradient(ellipse,rgba(167,139,250,.04),transparent 70%);
-  pointer-events:none;
-}
-.cta-title{font-family:var(--fd);font-weight:700;font-size:clamp(1.6rem,4vw,2.8rem);color:var(--cream);margin-bottom:1rem;position:relative}
-.cta-sub{font-family:var(--fb);font-size:1rem;color:var(--dim);margin-bottom:2.5rem;max-width:460px;margin-left:auto;margin-right:auto;position:relative;font-weight:300}
-.cta-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;position:relative}
-
-/* ═══════════ FOOTER ═══════════ */
-footer{border-top:1px solid var(--line);padding:2rem 2.5rem;text-align:center}
-footer p{font-family:var(--fm);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
-footer a{color:var(--dim);transition:color .3s}
-footer a:hover{color:var(--cream)}
-
-/* ═══════════ RESPONSIVE ═══════════ */
-@media(max-width:700px){
-  nav{padding:1rem 1.25rem}
-  .hero{padding:6rem 1.25rem 4rem}
-  .sec-inner{padding:4rem 1.25rem}
-  .hero-meta{gap:1.5rem}
-  .divider{margin:0 1.25rem}
-  .split-grid{grid-template-columns:1fr}
-  .reflection-grid{grid-template-columns:1fr}
-  .cta-section{padding:4rem 1.25rem}
+/* ─── ARTICLE BODY ─── */
+.article {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 5rem 3rem;
 }
 
-/* ═══════════ INTERACTIVE UX ═══════════ */
-.case-img img, section img { transition: transform .6s cubic-bezier(.22,1,.36,1), filter .4s; }
-.case-img img:hover, section img:hover { transform: scale(1.03); filter: brightness(1.1); }
-[class*="card"], [class*="stat"], [class*="chip"], [class*="btn"] {
-  transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s;
+/* Sections */
+.section-number {
+  font-family: var(--fm); font-size: .58rem;
+  letter-spacing: .2em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: .75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--accent);
+  display: inline-block;
 }
+.section-title {
+  font-family: var(--fd); font-weight: 700;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  letter-spacing: -.02em; color: var(--ink);
+  margin-bottom: 1.5rem; line-height: 1.12;
+}
+.section-rule {
+  height: 1px; background: var(--rule);
+  margin: 4rem 0;
+}
+
+/* Body text */
+.body-text p {
+  font-family: var(--fb); font-size: 1rem;
+  line-height: 1.8; color: var(--muted);
+  margin-bottom: 1.1rem; max-width: 640px;
+}
+.body-text p strong { color: var(--ink2); font-weight: 600; }
+
+/* Drop cap */
+.drop-cap::first-letter {
+  font-family: var(--fd); font-weight: 900;
+  font-size: 4em; line-height: .72;
+  float: left; margin: .06em .12em 0 0;
+  color: var(--accent);
+}
+
+/* Pull quote */
+.pull-quote {
+  margin: 2.5rem 0;
+  padding: 1.5rem 0 1.5rem 2rem;
+  border-left: 2px solid var(--accent);
+}
+.pull-quote blockquote {
+  font-family: var(--fd); font-style: italic;
+  font-weight: 300; font-size: 1.3rem;
+  line-height: 1.5; color: var(--ink2);
+  margin-bottom: .75rem;
+}
+.pull-quote cite {
+  font-family: var(--fm); font-size: .6rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--faint); font-style: normal;
+}
+
+/* Two-column layout */
+.two-col {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2rem; margin: 2rem 0;
+}
+@media(max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+.col-card {
+  padding: 1.5rem;
+  border: 1px solid var(--rule2);
+  background: var(--paper2);
+}
+.col-card-label {
+  font-family: var(--fm); font-size: .55rem;
+  letter-spacing: .14em; text-transform: uppercase;
+  margin-bottom: .75rem;
+}
+.col-card-title {
+  font-family: var(--fd); font-weight: 500;
+  font-size: 1.1rem; color: var(--ink);
+  margin-bottom: .6rem;
+}
+.col-card-body {
+  font-family: var(--fb); font-size: .9rem;
+  color: var(--muted); line-height: 1.7;
+}
+
+/* Stats row */
+.stats-row {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--rule2);
+  border: 1px solid var(--rule2);
+  margin: 2rem 0;
+  overflow: hidden;
+}
+.stat-cell {
+  background: var(--paper2); padding: 1.5rem 1.25rem;
+  text-align: center;
+}
+.stat-number {
+  font-family: var(--fd); font-weight: 900;
+  font-size: 2rem; color: var(--accent);
+  letter-spacing: -.03em; line-height: 1;
+  margin-bottom: .35rem;
+}
+.stat-label {
+  font-family: var(--fm); font-size: .55rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--faint);
+}
+
+/* Feature list */
+.feature-list {
+  margin: 2rem 0;
+  display: flex; flex-direction: column; gap: 1px;
+  background: var(--rule); border: 1px solid var(--rule2);
+  overflow: hidden;
+}
+.feature-row {
+  display: grid; grid-template-columns: 2.5rem 1fr;
+  gap: 1.5rem; align-items: start;
+  padding: 1.5rem;
+  background: var(--paper2);
+  transition: background .3s;
+}
+.feature-row:hover { background: rgba(var(--accent-rgb), 0.06); }
+.feature-row:hover .feature-arrow { color: var(--accent); }
+.feature-num {
+  font-family: var(--fd); font-weight: 900;
+  font-size: 1.5rem; color: var(--accent);
+  line-height: 1;
+}
+.feature-title {
+  font-family: var(--fd); font-weight: 500;
+  font-size: 1rem; color: var(--ink);
+  margin-bottom: .4rem;
+}
+.feature-body {
+  font-family: var(--fb); font-size: .9rem;
+  color: var(--muted); line-height: 1.7;
+  margin-bottom: .5rem;
+}
+.feature-tag {
+  font-family: var(--fm); font-size: .55rem;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--accent);
+}
+.feature-arrow { float: right; color: var(--faint); transition: color .3s; }
+
+/* Timeline */
+.timeline-list {
+  margin: 2rem 0;
+  border-top: 1px solid var(--rule);
+}
+.timeline-row {
+  display: grid; grid-template-columns: 3rem 1fr;
+  gap: 1.5rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+.tl-num {
+  font-family: var(--fm); font-size: .6rem;
+  color: var(--accent); letter-spacing: .06em;
+  padding-top: .25rem;
+}
+.tl-label {
+  font-family: var(--fm); font-size: .55rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: .25rem;
+}
+.tl-title {
+  font-family: var(--fd); font-weight: 500;
+  font-size: 1rem; color: var(--ink);
+  margin-bottom: .3rem;
+}
+.tl-body {
+  font-family: var(--fb); font-size: .9rem;
+  color: var(--muted); line-height: 1.7;
+}
+
+/* Reflection grid */
+.reflection-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px; background: var(--rule2);
+  border: 1px solid var(--rule2); margin: 2rem 0;
+  overflow: hidden;
+}
+@media(max-width: 700px) { .reflection-grid { grid-template-columns: 1fr; } }
+.reflection-cell {
+  background: var(--paper2); padding: 1.75rem 1.5rem;
+}
+.reflection-roman {
+  font-family: var(--fd); font-style: italic;
+  font-size: 1.6rem; color: var(--accent);
+  margin-bottom: .75rem; font-weight: 300;
+}
+.reflection-title {
+  font-family: var(--fd); font-weight: 500;
+  font-size: 1rem; color: var(--ink);
+  margin-bottom: .5rem;
+}
+.reflection-body {
+  font-family: var(--fb); font-size: .88rem;
+  color: var(--muted); line-height: 1.7;
+}
+
+/* ─── FULL-WIDTH BREAK ─── */
+.break-block {
+  border-top: 1px solid var(--rule2);
+  border-bottom: 1px solid var(--rule2);
+  background: var(--paper2);
+  padding: 4rem 3rem;
+  margin: 0;
+  text-align: center;
+}
+.break-block p {
+  font-family: var(--fd); font-style: italic; font-weight: 300;
+  font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+  line-height: 1.5; color: var(--ink);
+  max-width: 700px; margin: 0 auto 1rem;
+}
+.break-block .attr {
+  font-family: var(--fm); font-size: .6rem;
+  letter-spacing: .16em; text-transform: uppercase;
+  color: var(--faint);
+}
+
+/* ─── CTA FOOTER ─── */
+.article-cta {
+  border-top: 1px solid var(--rule2);
+  padding: 5rem 3rem;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: start;
+  max-width: 100%;
+}
+.article-cta h2 {
+  font-family: var(--fd); font-weight: 700;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  letter-spacing: -.03em; line-height: 1;
+  color: var(--ink); margin-bottom: 1rem;
+}
+.article-cta h2 em { font-style: italic; color: var(--accent); }
+.article-cta p {
+  font-family: var(--fd); font-style: italic;
+  font-size: 1rem; color: var(--muted);
+  margin-bottom: 2rem;
+}
+.cta-buttons { display: flex; flex-direction: column; gap: .75rem; }
+.btn-primary, .btn-secondary {
+  display: inline-flex; align-items: center; gap: .75rem;
+  font-family: var(--fm); font-size: .62rem;
+  letter-spacing: .12em; text-transform: uppercase;
+  padding: .9rem 1.5rem; transition: all .3s;
+  width: fit-content;
+}
+.btn-primary { background: var(--accent); color: var(--paper); }
+.btn-primary:hover { background: var(--ink); }
+.btn-secondary { border: 1px solid var(--rule2); color: var(--muted); }
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── FOOTER ─── */
+footer {
+  padding: 2rem 3rem;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid var(--rule);
+}
+footer span {
+  font-family: var(--fm); font-size: .6rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--faint);
+}
+footer a { font-family: var(--fm); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); transition: color .3s; }
+footer a:hover { color: var(--accent); }
+
+/* ─── REVEAL ─── */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+.reveal.visible { opacity: 1; transform: none; }
+.d1{transition-delay:.08s!important} .d2{transition-delay:.16s!important}
+.d3{transition-delay:.24s!important} .d4{transition-delay:.32s!important}
+.d5{transition-delay:.4s!important}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width: 768px) {
+  nav { padding: 1rem 1.5rem; }
+  .hero { padding: 6rem 1.5rem 0; }
+  .hero-above-fold { grid-template-columns: 1fr; gap: 2rem; }
+  .article { padding: 3rem 1.5rem; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .article-cta { padding: 3rem 1.5rem; grid-template-columns: 1fr; gap: 2rem; }
+  footer { padding: 1.5rem; }
+}
+@media(prefers-reduced-motion: reduce) { *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
 </style>
 </head>
 <body>
-
-<!-- Cursor -->
-<div id="cur"></div><div id="cur-dot"></div>
-<!-- Scroll progress -->
-<div id="progress"></div>
-<!-- Grain overlay -->
 <div id="grain"></div>
-<!-- Glow -->
-<div id="glow"></div>
-
-<!-- Fixed CTA -->
-<button class="fixed-cta" id="cta-copy" data-magnetic>
-  <span class="dot"></span>
-  <span id="cta-text">Copy Email</span>
-</button>
+<div id="progress"></div>
 
 <!-- NAV -->
 <nav id="nav">
-  <a href="index.html" class="nav-mark" data-magnetic>A<i>.</i>E</a>
-  <div class="nav-r">
-    <a href="index.html" data-magnetic>&larr; All Work</a>
-    <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" class="nav-pill" data-magnetic>Watch Demo</a>
+  <a href="index.html" class="nav-logo"><em>Andre</em> Espinoza</a>
+  <div style="display:flex;align-items:center;gap:1.5rem;">
+    <a href="index.html" class="nav-back">← All Work</a>
+    <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" rel="noopener noreferrer" class="nav-pill">Watch Demo</a>
   </div>
 </nav>
 
-<!-- ═══════════ HERO ═══════════ -->
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-content">
-    <div class="hero-tag"><span>Senior Capstone</span> &mdash; St. Edward's University &mdash; 2024</div>
-    <h1 class="hero-impact">Turned course selection from a 30-minute advisor wait into a <em>5-minute conversation.</em></h1>
-    <p class="hero-sub">Students were gaming the registration system because the advising process was broken. I built a GPT-powered chatbot trained on real St. Edward's course data &mdash; a conversational alternative that actually worked.</p>
-    <div class="hero-meta">
-      <div class="hero-meta-item"><span class="hero-meta-label">Role</span><span class="hero-meta-value">UX Research, Frontend, API, GPT Training</span></div>
-      <div class="hero-meta-item"><span class="hero-meta-label">Team</span><span class="hero-meta-value">Collaborative (partners: Python/Flask)</span></div>
-      <div class="hero-meta-item"><span class="hero-meta-label">Stack</span><span class="hero-meta-value">OpenAI GPT, Python, Flask, Figma</span></div>
+  <div class="hero-above-fold">
+    <div>
+      <div class="hero-kicker">Senior Capstone · St. Edward's University · 2024</div>
+      <h1>Topper<br><em>AI</em></h1>
+      <p class="hero-sub">Turned course selection from a 30-minute advisor wait into a 5-minute conversation. A GPT-powered chatbot trained on real St. Edward's course data.</p>
     </div>
-    <div class="hero-cta">
-      <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" class="btn-v" data-magnetic><span>Watch Demo &nearr;</span></a>
-      <a href="#overview" class="btn-g" data-magnetic><span>Read Case Study &darr;</span></a>
+    <div class="hero-byline">
+      <div class="hero-byline-label">Case Study</div>
+      <div class="hero-meta-grid">
+        <div class="hero-meta-item">
+          <div class="meta-label">Role</div>
+          <div class="meta-val">UX Research, Frontend, API</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="meta-label">Team</div>
+          <div class="meta-val">Collaborative</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="meta-label">Stack</div>
+          <div class="meta-val">OpenAI GPT, Flask, Figma</div>
+        </div>
+        <div class="hero-meta-item">
+          <div class="meta-label">Context</div>
+          <div class="meta-val">Senior Capstone</div>
+        </div>
+      </div>
+      <div class="read-time">7 min read</div>
     </div>
   </div>
-  <div class="hero-scroll"><div class="scroll-bar"></div><span>Scroll</span></div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ═══════════ 01 — OVERVIEW ═══════════ -->
-<section id="overview">
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">01</span> Overview</div>
-    <h2 class="sec-title rv">The advising bottleneck <em>was the problem</em></h2>
-    <div class="sec-body rv">
-      <p>Course registration at St. Edward's was a mess. Students didn't always know what to take, when to take it, or how it fit their degree plan. <strong>Academic advisors were overloaded</strong>, the information existed but it was buried across catalogs and outdated PDFs. Students were making uninformed decisions or delaying registration entirely.</p>
-      <p>Topper was designed to bridge that gap &mdash; not replace advisors, but handle the questions that didn't need a human in the first place.</p>
-    </div>
-    <div class="split-grid">
-      <div class="split-card rv-l d1">
-        <div class="split-card-label problem">The Gap</div>
-        <div class="split-card-title">Students wait days for advisor meetings and still leave confused about electives</div>
-        <div class="split-card-body">The bottleneck meant students made uninformed decisions about their schedules, or skipped advising entirely and hoped for the best.</div>
-      </div>
-      <div class="split-card rv-r d2">
-        <div class="split-card-label solution">The Fix</div>
-        <div class="split-card-title">AI chatbot trained on real course data gives answers in under 5 minutes</div>
-        <div class="split-card-body">Topper provides instant, personalized course recommendations based on actual university data. No appointment needed.</div>
-      </div>
-    </div>
+  <div class="hero-bottom-bar">
+    <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" rel="noopener noreferrer" class="cta-link">Watch Demo →</a>
+    <a href="#overview" class="cta-link">Read Case Study →</a>
+    <span class="scroll-hint-text">Scroll to read</span>
   </div>
 </section>
 
-<div class="divider"></div>
+<!-- STATS -->
+<div class="stats-row reveal">
+  <div class="stat-cell">
+    <div class="stat-number">&lt;5min</div>
+    <div class="stat-label">To Find Relevant Courses</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">500+</div>
+    <div class="stat-label">Custom Training Queries</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">2</div>
+    <div class="stat-label">Rounds of User Testing</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-number">1</div>
+    <div class="stat-label">Major Infra Pivot Navigated</div>
+  </div>
+</div>
 
-<!-- ═══════════ 02 — MY ROLE ═══════════ -->
-<section>
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">02</span> My Role</div>
-    <h2 class="sec-title rv">What I <em>actually</em> built</h2>
-    <div class="sec-body rv">
-      <p>This was a collaborative senior capstone. My partners handled the Python/Flask backend. Everything else &mdash; the research, the interface, the AI training, the mid-project infrastructure pivot &mdash; that was me.</p>
+<!-- ARTICLE BODY -->
+<div class="article">
+
+  <!-- I. OVERVIEW -->
+  <section id="overview">
+    <div class="section-number reveal">I. Overview</div>
+    <h2 class="section-title reveal">The advising bottleneck was the problem</h2>
+    <div class="body-text reveal">
+      <p class="drop-cap">Course registration at St. Edward's was a mess. Students didn't always know what to take, when to take it, or how it fit their degree plan. <strong>Academic advisors were overloaded</strong>, the information existed but it was buried across catalogs and outdated PDFs. Students were making uninformed decisions or delaying registration entirely.</p>
+      <p>Topper was designed to bridge that gap — not replace advisors, but handle the questions that didn't need a human in the first place.</p>
     </div>
-    <div class="feature-list">
-      <div class="feature-card rv d1">
-        <div class="feature-icon">&#128269;</div>
+
+    <div class="two-col reveal">
+      <div class="col-card">
+        <div class="col-card-label" style="color:var(--accent2)">The Gap</div>
+        <div class="col-card-title">Students wait days for advisor meetings and still leave confused</div>
+        <div class="col-card-body">The bottleneck meant students made uninformed decisions about their schedules, or skipped advising entirely and hoped for the best.</div>
+      </div>
+      <div class="col-card">
+        <div class="col-card-label" style="color:var(--accent)">The Fix</div>
+        <div class="col-card-title">AI chatbot trained on real course data gives answers in under 5 minutes</div>
+        <div class="col-card-body">Topper provides instant, personalized course recommendations based on actual university data. No appointment needed.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-rule"></div>
+
+  <!-- II. MY ROLE -->
+  <section id="role">
+    <div class="section-number reveal">II. My Role</div>
+    <h2 class="section-title reveal">What I actually built</h2>
+    <div class="body-text reveal">
+      <p>This was a collaborative senior capstone. My partners handled the Python/Flask backend. Everything else — the research, the interface, the AI training, the mid-project infrastructure pivot — that was me.</p>
+    </div>
+
+    <div class="feature-list reveal">
+      <div class="feature-row">
+        <div class="feature-num">1</div>
         <div>
           <div class="feature-title">UX Research</div>
-          <div class="feature-body">Mapped how students actually navigate course selection. Identified where the pain points were &mdash; not where the university thought they were.</div>
+          <div class="feature-body">Mapped how students actually navigate course selection. Identified where the pain points were — not where the university thought they were.</div>
           <div class="feature-tag">User Research</div>
         </div>
       </div>
-      <div class="feature-card rv d2">
-        <div class="feature-icon">&#127912;</div>
+      <div class="feature-row">
+        <div class="feature-num">2</div>
         <div>
           <div class="feature-title">Frontend Design</div>
           <div class="feature-body">Figma prototype for the full chat interface and user flow. Conversational UI for both mobile and desktop, focused on clarity and speed.</div>
           <div class="feature-tag">Figma</div>
         </div>
       </div>
-      <div class="feature-card rv d3">
-        <div class="feature-icon">&#128279;</div>
+      <div class="feature-row">
+        <div class="feature-num">3</div>
         <div>
           <div class="feature-title">API Configuration</div>
           <div class="feature-body">Integrated the OpenAI API and set up the data pipeline connecting course catalogs to the model.</div>
           <div class="feature-tag">OpenAI API</div>
         </div>
       </div>
-      <div class="feature-card rv d4">
-        <div class="feature-icon">&#129302;</div>
+      <div class="feature-row">
+        <div class="feature-num">4</div>
         <div>
           <div class="feature-title">Custom GPT Training</div>
           <div class="feature-body">Built 500+ unique training queries to make the model give accurate, university-specific answers. Generic prompts don't cut it for specialized knowledge.</div>
-          <div class="feature-tag">500+ Queries</div>
+          <div class="feature-tag">500+ Training Queries</div>
         </div>
       </div>
-      <div class="feature-card rv d5">
-        <div class="feature-icon">&#128736;</div>
+      <div class="feature-row">
+        <div class="feature-num">5</div>
         <div>
           <div class="feature-title">Infrastructure Pivot</div>
           <div class="feature-body">When our original Google Cloud plan fell through, I led the pivot to OpenAI's updated API platform mid-project. Design thinking, not just technical fixes.</div>
@@ -483,236 +599,171 @@ footer a:hover{color:var(--cream)}
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<div class="divider"></div>
+  <div class="section-rule"></div>
 
-<!-- ═══════════ 03 — PROCESS ═══════════ -->
-<section>
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">03</span> Process</div>
-    <h2 class="sec-title rv">How we <em>built it</em></h2>
-    <div class="timeline">
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 1</div>
-        <div class="timeline-title">User Research</div>
-        <div class="timeline-body">Talked to students. Found out they needed fast, specific answers about courses, prerequisites, and degree requirements &mdash; not a better FAQ page.</div>
+  <!-- III. PROCESS -->
+  <section id="process">
+    <div class="section-number reveal">III. Process</div>
+    <h2 class="section-title reveal">How we built it</h2>
+
+    <div class="timeline-list reveal">
+      <div class="timeline-row">
+        <div class="tl-num">01</div>
+        <div>
+          <div class="tl-label">Step 1</div>
+          <div class="tl-title">User Research</div>
+          <div class="tl-body">Talked to students. Found out they needed fast, specific answers about courses, prerequisites, and degree requirements — not a better FAQ page.</div>
+        </div>
       </div>
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 2</div>
-        <div class="timeline-title">Scoped the AI</div>
-        <div class="timeline-body">Determined what the chatbot should and shouldn't know. Setting clear boundaries was the difference between useful and hallucinating.</div>
+      <div class="timeline-row">
+        <div class="tl-num">02</div>
+        <div>
+          <div class="tl-label">Step 2</div>
+          <div class="tl-title">Scoped the AI</div>
+          <div class="tl-body">Determined what the chatbot should and shouldn't know. Setting clear boundaries was the difference between useful and hallucinating.</div>
+        </div>
       </div>
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 3</div>
-        <div class="timeline-title">Built training dataset</div>
-        <div class="timeline-body">Created 500+ queries covering courses, prerequisites, degree requirements, and scheduling. This was the real work &mdash; training data is everything.</div>
+      <div class="timeline-row">
+        <div class="tl-num">03</div>
+        <div>
+          <div class="tl-label">Step 3</div>
+          <div class="tl-title">Built training dataset</div>
+          <div class="tl-body">Created 500+ queries covering courses, prerequisites, degree requirements, and scheduling. This was the real work — training data is everything.</div>
+        </div>
       </div>
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 4</div>
-        <div class="timeline-title">Designed the interface</div>
-        <div class="timeline-body">Conversational UI designed in Figma. The goal: a student asks a question and gets a useful answer without thinking about the interface at all.</div>
+      <div class="timeline-row">
+        <div class="tl-num">04</div>
+        <div>
+          <div class="tl-label">Step 4</div>
+          <div class="tl-title">Designed the interface</div>
+          <div class="tl-body">Conversational UI designed in Figma. The goal: a student asks a question and gets a useful answer without thinking about the interface at all.</div>
+        </div>
       </div>
-      <div class="timeline-item rv">
-        <div class="timeline-dot"></div>
-        <div class="timeline-label">Step 5</div>
-        <div class="timeline-title">User Testing (2 rounds)</div>
-        <div class="timeline-body">Tested whether students could find a relevant course in under 5 minutes. Result: yes &mdash; across both rounds. The chatbot was faster than the catalog.</div>
+      <div class="timeline-row">
+        <div class="tl-num">05</div>
+        <div>
+          <div class="tl-label">Step 5</div>
+          <div class="tl-title">User Testing (2 rounds)</div>
+          <div class="tl-body">Tested whether students could find a relevant course in under 5 minutes. Result: yes — across both rounds. The chatbot was faster than the catalog.</div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<div class="divider"></div>
+  <div class="section-rule"></div>
 
-<!-- ═══════════ 04 — RESULTS ═══════════ -->
-<section>
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">04</span> Results</div>
-    <h2 class="sec-title rv">What we <em>proved</em></h2>
-    <div class="sec-body rv">
-      <p>Topper was built and tested but not publicly released &mdash; it was a senior capstone, not a production launch. But the testing validated the core idea: <strong>students could get course answers faster through conversation than through the existing system.</strong></p>
-    </div>
-    <div class="stats-grid">
-      <div class="stat-card rv d1"><div class="stat-number">&lt;5 min</div><div class="stat-label">To find relevant courses (both rounds)</div></div>
-      <div class="stat-card rv d2"><div class="stat-number">500+</div><div class="stat-label">Custom training queries</div></div>
-      <div class="stat-card rv d3"><div class="stat-number">2</div><div class="stat-label">Rounds of user testing</div></div>
-      <div class="stat-card rv d4"><div class="stat-number">1</div><div class="stat-label">Major infra pivot navigated</div></div>
-    </div>
-  </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ═══════════ 05 — REFLECTION ═══════════ -->
-<section>
-  <div class="sec-inner">
-    <div class="sec-tag rv"><span class="num">05</span> Reflection</div>
-    <h2 class="sec-title rv">What I <em>took away</em></h2>
-
-    <div class="quote-block rv">
-      <div class="quote-text">"Custom training data is the difference between a chatbot and a useful one. Generic prompts don't cut it for specialized knowledge."</div>
-      <div class="quote-author">&mdash; Andre Espinoza</div>
+  <!-- IV. RESULTS -->
+  <section id="results">
+    <div class="section-number reveal">IV. Results</div>
+    <h2 class="section-title reveal">What we proved</h2>
+    <div class="body-text reveal">
+      <p>Topper was built and tested but not publicly released — it was a senior capstone, not a production launch. But the testing validated the core idea: <strong>students could get course answers faster through conversation than through the existing system.</strong></p>
     </div>
 
-    <div class="reflection-grid">
-      <div class="reflection-card rv d1">
-        <div class="reflection-emoji">&#128218;</div>
+    <div class="pull-quote reveal">
+      <blockquote>"The chatbot was faster than the catalog — and students didn't have to wait three days for a 20-minute advising appointment."</blockquote>
+      <cite>— User testing summary, Round 2</cite>
+    </div>
+  </section>
+
+  <div class="section-rule"></div>
+
+  <!-- V. REFLECTION -->
+  <section id="reflection">
+    <div class="section-number reveal">V. Reflection</div>
+    <h2 class="section-title reveal">What I took away</h2>
+
+    <div class="pull-quote reveal">
+      <blockquote>"Custom training data is the difference between a chatbot and a useful one. Generic prompts don't cut it for specialized knowledge."</blockquote>
+      <cite>— Andre Espinoza</cite>
+    </div>
+
+    <div class="reflection-grid reveal">
+      <div class="reflection-cell">
+        <div class="reflection-roman">i</div>
         <div class="reflection-title">Training data is everything</div>
         <div class="reflection-body">The 500+ custom queries made the difference between a generic chatbot and one that actually knew the university's course catalog.</div>
       </div>
-      <div class="reflection-card rv d2">
-        <div class="reflection-emoji">&#128260;</div>
+      <div class="reflection-cell">
+        <div class="reflection-roman">ii</div>
         <div class="reflection-title">Pivots are design problems</div>
         <div class="reflection-body">Mid-project infrastructure pivots require design thinking. You're re-architecting the solution, not just swapping a tool.</div>
       </div>
-      <div class="reflection-card rv d3">
-        <div class="reflection-emoji">&#129309;</div>
+      <div class="reflection-cell">
+        <div class="reflection-roman">iii</div>
         <div class="reflection-title">Teaching is building</div>
         <div class="reflection-body">Teaching non-technical teammates how to use AI tools was as valuable as the build itself. The best tool fails if the team can't use it.</div>
       </div>
     </div>
+  </section>
+
+</div><!-- /article -->
+
+<!-- BREAK QUOTE -->
+<div class="break-block">
+  <p>"Built to answer the questions advisors are too busy to field — and students are too frustrated to wait for."</p>
+  <div class="attr">Topper AI · St. Edward's University · 2024</div>
+</div>
+
+<!-- CTA FOOTER -->
+<div class="article-cta">
+  <div>
+    <h2>See the<br><em>Demo</em></h2>
+    <p>Topper AI was a senior capstone — watch the full walkthrough or head back to the portfolio.</p>
+    <div class="cta-buttons">
+      <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" rel="noopener noreferrer" class="btn-primary">Watch Demo →</a>
+      <a href="mailto:andreespinoza02@gmail.com" class="btn-secondary">Get in Touch →</a>
+    </div>
   </div>
-</section>
-
-<div class="divider"></div>
-
-<!-- ═══════════ CTA ═══════════ -->
-<div class="cta-section">
-  <div class="cta-glow"></div>
-  <h2 class="cta-title rv">See more work</h2>
-  <p class="cta-sub rv">Topper AI was a senior capstone &mdash; explore the demo or head back to the portfolio.</p>
-  <div class="cta-buttons rv">
-    <a href="https://youtu.be/KhvTOwX8xlQ" target="_blank" class="btn-v" data-magnetic><span>Watch Demo &nearr;</span></a>
-    <a href="index.html" class="btn-g" data-magnetic><span>&larr; Back to Portfolio</span></a>
+  <div>
+    <div style="font-family:var(--fm);font-size:.55rem;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:1.5rem;">More Case Studies</div>
+    <a href="aventi.html" style="display:block;padding:1.25rem;border:1px solid var(--rule2);background:var(--paper2);margin-bottom:1px;font-family:var(--fd);font-style:italic;color:var(--ink2);transition:border-color .3s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--rule2)'">
+      <div style="font-family:var(--fm);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem;">UX Design</div>
+      Aventi — Activity Discovery App →
+    </a>
+    <a href="cartlog.html" style="display:block;padding:1.25rem;border:1px solid var(--rule2);background:var(--paper2);margin-bottom:1px;font-family:var(--fd);font-style:italic;color:var(--ink2);transition:border-color .3s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--rule2)'">
+      <div style="font-family:var(--fm);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem;">Product Design</div>
+      CartLog — AI Receipt Scanner →
+    </a>
+    <a href="broken-spoke.html" style="display:block;padding:1.25rem;border:1px solid var(--rule2);background:var(--paper2);font-family:var(--fd);font-style:italic;color:var(--ink2);transition:border-color .3s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--rule2)'">
+      <div style="font-family:var(--fm);font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem;">Cultural UX</div>
+      Broken Spoke VR Tour →
+    </a>
   </div>
 </div>
 
 <footer>
-  <p>Designed &amp; built by <a href="index.html">Andre Espinoza</a></p>
+  <span>&copy; 2025–2026 Andre Espinoza — andreespinoza02@gmail.com</span>
+  <a href="index.html">← Back to Portfolio</a>
 </footer>
 
 <script>
-/* ─── CURSOR ─── */
-(function(){
-  var cur=document.getElementById('cur'),dot=document.getElementById('cur-dot'),glow=document.getElementById('glow');
-  if(!cur||!dot)return;
-  if(window.matchMedia('(hover:none)').matches)return;
-  var mx=0,my=0,cx=0,cy=0,gx=0,gy=0;
-  function lerp(a,b,t){return a+(b-a)*t}
-  document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'});
-  (function loop(){
-    cx=lerp(cx,mx,.12);cy=lerp(cy,my,.12);
-    cur.style.left=cx+'px';cur.style.top=cy+'px';
-    if(glow){gx=lerp(gx,mx,.03);gy=lerp(gy,my,.03);glow.style.left=gx+'px';glow.style.top=gy+'px'}
-    requestAnimationFrame(loop);
-  })();
-  var targets='a,button,.split-card,.feature-card,.stat-card,.reflection-card,.nav-mark,[data-magnetic]';
-  document.addEventListener('mouseover',function(e){if(e.target.closest(targets))cur.classList.add('hover')});
-  document.addEventListener('mouseout',function(e){if(e.target.closest(targets))cur.classList.remove('hover')});
-  document.addEventListener('mousedown',function(){cur.classList.add('click')});
-  document.addEventListener('mouseup',function(){cur.classList.remove('click')});
-  // Magnetic
-  document.querySelectorAll('[data-magnetic]').forEach(function(el){
-    el.addEventListener('mousemove',function(e){
-      var rect=el.getBoundingClientRect();
-      var dx=e.clientX-(rect.left+rect.width/2);
-      var dy=e.clientY-(rect.top+rect.height/2);
-      var dist=Math.hypot(dx,dy);
-      if(dist<80){var f=1-dist/80;el.style.transform='translate('+dx*f*.15+'px,'+dy*f*.15+'px)'}
-    });
-    el.addEventListener('mouseleave',function(){
-      el.style.transform='';el.style.transition='transform .5s cubic-bezier(.22,1,.36,1)';
-      setTimeout(function(){el.style.transition=''},500);
-    });
-  });
+// Scroll progress
+(function() {
+  var bar = document.getElementById('progress');
+  window.addEventListener('scroll', function() {
+    bar.style.width = (window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100) + '%';
+  }, { passive: true });
 })();
 
-/* ─── SCROLL PROGRESS ─── */
-(function(){
-  var bar=document.getElementById('progress');
-  window.addEventListener('scroll',function(){
-    bar.style.width=(window.scrollY/(document.body.scrollHeight-window.innerHeight)*100)+'%';
-  },{passive:true});
+// Nav scroll
+(function() {
+  var nav = document.getElementById('nav');
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  }, { passive: true });
 })();
 
-/* ─── NAV SCROLL ─── */
-(function(){
-  var nav=document.getElementById('nav');
-  window.addEventListener('scroll',function(){
-    nav.classList.toggle('scrolled',window.scrollY>60);
-  },{passive:true});
-})();
-
-/* ─── SCROLL REVEALS ─── */
-(function(){
-  var obs=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');obs.unobserve(e.target)}});
-  },{threshold:.05,rootMargin:'0px 0px -60px 0px'});
-  document.querySelectorAll('.rv,.rv-l,.rv-r').forEach(function(el){obs.observe(el)});
-})();
-
-/* ─── SMOOTH ANCHORS ─── */
-document.querySelectorAll('a[href^="#"]').forEach(function(a){
-  a.addEventListener('click',function(e){
-    var t=document.querySelector(a.getAttribute('href'));
-    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'})}
-  });
-});
-
-/* ─── COPY EMAIL CTA ─── */
-(function(){
-  var btn=document.getElementById('cta-copy');
-  var txt=document.getElementById('cta-text');
-  if(!btn)return;
-  btn.addEventListener('click',function(){
-    navigator.clipboard.writeText('andreespinoza02@gmail.com').then(function(){
-      txt.textContent='Copied!';
-      btn.classList.add('copied');
-      setTimeout(function(){txt.textContent='Copy Email';btn.classList.remove('copied')},2000);
+// Scroll reveal
+(function() {
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
     });
-  });
-})();
-
-/* ─── 3D TILT ON CARDS ─── */
-(function(){
-  if(!window.matchMedia('(hover:hover)').matches)return;
-  document.querySelectorAll('[class*="card"],[class*="grid"] > div').forEach(function(card){
-    card.addEventListener('mousemove',function(e){
-      var rect=card.getBoundingClientRect();
-      var x=(e.clientX-rect.left)/rect.width-.5;
-      var y=(e.clientY-rect.top)/rect.height-.5;
-      card.style.transform='perspective(600px) rotateX('+(-y*4)+'deg) rotateY('+(x*4)+'deg) scale(1.02)';
-    });
-    card.addEventListener('mouseleave',function(){
-      card.style.transform='';
-      card.style.transition='transform .5s cubic-bezier(.22,1,.36,1)';
-      setTimeout(function(){card.style.transition=''},500);
-    });
-  });
-})();
-
-/* ─── SECTION PARALLAX DEPTH ─── */
-(function(){
-  if(!window.matchMedia('(hover:hover)').matches)return;
-  document.querySelectorAll('section').forEach(function(sec){
-    sec.addEventListener('mousemove',function(e){
-      var rect=sec.getBoundingClientRect();
-      var x=(e.clientX-rect.left)/rect.width-.5;
-      var y=(e.clientY-rect.top)/rect.height-.5;
-      var heading=sec.querySelector('h2,h3');
-      if(heading)heading.style.transform='translate('+(x*-6)+'px,'+(y*-4)+'px)';
-    });
-    sec.addEventListener('mouseleave',function(){
-      var heading=sec.querySelector('h2,h3');
-      if(heading){heading.style.transform='';heading.style.transition='transform .4s ease'}
-    });
-  });
+  }, { threshold: .05, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
 })();
 </script>
 </body>

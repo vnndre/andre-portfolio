@@ -22,6 +22,7 @@
   --rule2: rgba(26,26,24,.18);
   --accent: #4a5c8b;    /* indigo-slate — matches aventi brand feeling */
   --accent2: #647cb5;
+  --accent-rgb: 74,92,139;
   --fd: 'Fraunces', Georgia, serif;
   --fb: 'Inter', system-ui, sans-serif;
   --fm: 'JetBrains Mono', monospace;
@@ -169,6 +170,9 @@ nav.scrolled { background: rgba(250,247,242,.92); backdrop-filter: blur(12px); b
   font-family: var(--fm); font-size: .58rem;
   letter-spacing: .2em; text-transform: uppercase;
   color: var(--accent); margin-bottom: .75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--accent);
+  display: inline-block;
 }
 .section-title {
   font-family: var(--fd); font-weight: 700;
@@ -312,7 +316,7 @@ nav.scrolled { background: rgba(250,247,242,.92); backdrop-filter: blur(12px); b
   background: var(--paper2);
   transition: background .3s;
 }
-.feature-row:hover { background: var(--paper); }
+.feature-row:hover { background: rgba(74,92,139,.06); }
 .feature-num {
   font-family: var(--fd); font-weight: 900;
   font-size: 1.5rem; color: var(--accent);
@@ -1008,7 +1012,7 @@ footer a:hover { color: var(--accent); }
 </div>
 
 <footer>
-  <span>&copy; 2026 Andre Espinoza — andreespinoza02@gmail.com</span>
+  <span>&copy; 2025–2026 Andre Espinoza — andreespinoza02@gmail.com</span>
   <a href="index.html">← Back to Portfolio</a>
 </footer>
 
